@@ -1,4 +1,3 @@
-import sys
 import json
 from imghdr import tests
 from pathlib import Path
@@ -7,7 +6,7 @@ from server_api import app
 
 client = TestClient(app)
 filepath = Path(__file__).parent / "testcode.json"
-
+""
 try:
     with open(filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
