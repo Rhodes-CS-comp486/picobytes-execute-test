@@ -18,8 +18,6 @@ ccode = data.get("code", "")
 tests = data.get("tests")
 def test_api_submit_no_test():
     json_payload = {"code": ccode}
-    print(f"Sending JSON: {json.dumps(json_payload)}", file=sys.stderr)  # Debugging
-
     response = client.post("/submit", json=json_payload)
     assert response.status_code == 200
     json_response = response.json()
@@ -28,8 +26,6 @@ def test_api_submit_no_test():
 
 def test_api_submit_with_test():
     json_payload = {"code": ccode, "tests": tests}
-    print(f"Sending JSON: {json.dumps(json_payload)}", file=sys.stderr)  # Debugging
-
     response = client.post("/submit", json=json_payload)
     assert response.status_code == 200
     json_response = response.json()
