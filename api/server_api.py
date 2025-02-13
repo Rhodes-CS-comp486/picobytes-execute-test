@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import json
 from pathlib import Path
+import uvicorn
 
 directory = Path("to_execute")
 directory.mkdir(parents=True, exist_ok=True)
@@ -18,7 +19,9 @@ app = FastAPI()
 @app.get("/")
 def root():
     return {"message": "Hello World"}
-
+#json has to be formatted in a specific way to work
+#newlines (\n) are escaped as \\n
+#double quotes (") inside the string are escaped as \"
 @app.post("/submit")
 def better_submit(item : Item):
     with filepath1.open( "w", encoding="utf-8") as f:
@@ -49,3 +52,6 @@ def submit(item : Item ):
 
     except subprocess.CalledProcessError as e:
         return {"success": False, "error": e.stderr.strip()}
+
+if __name__ == "__main__":
+    uvicorn.run("server_api:app", host="127.0.0.1", port=5000, reload=True)
