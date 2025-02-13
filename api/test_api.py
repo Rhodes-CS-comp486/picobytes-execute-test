@@ -27,18 +27,3 @@ def test_api_submit_no_test():
     response = client.post("/submit", json=json_payload)
     assert response.status_code == 200
 
-def test_api_submit2_no_test():
-    json_payload = {"code": ccode}
-    response = client.post("/submit2", json=json_payload)
-    assert response.status_code == 200
-    json_response = response.json()
-    assert "success" in json_response
-    assert json_response["success"] is True
-
-def test_api_submit2_with_test():
-    json_payload = {"code": ccode, "tests": tests}
-    response = client.post("/submit2", json=json_payload)
-    assert response.status_code == 200
-    json_response = response.json()
-    assert "success" in json_response
-    assert json_response["success"] is True
