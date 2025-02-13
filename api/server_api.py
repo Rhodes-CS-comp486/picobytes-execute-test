@@ -3,21 +3,34 @@ from pydantic import BaseModel
 import subprocess
 import tempfile
 import json
+from pathlib import Path
 
-
-
+directory = Path("to_execute")
+directory.mkdir(parents=True, exist_ok=True)
+filepath1 = directory / "code.c"
+filepath2 = directory / "tests.c"
 class Item(BaseModel):
     code : str
-    tests : str | None = ""
+    tests : str | None = None
 
 app = FastAPI()
-
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
 @app.post("/submit")
+def better_submit(item : Item):
+    with filepath1.open( "w", encoding="utf-8") as f:
+        f.write(item.code)
+    if item.tests != None:
+        with filepath2.open( "w", encoding="utf-8") as f:
+            f.write(item.tests)
+    else:
+        with filepath2.open( "w", encoding="utf-8") as f:
+            f.write("")
+
+@app.post("/submit2")
 def submit(item : Item ):
     try:
         with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".json") as temp_file:
