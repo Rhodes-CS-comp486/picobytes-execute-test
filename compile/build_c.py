@@ -1,12 +1,12 @@
 def build():
     c_code = [];
-    with open("tempC.c", "r") as file:
+    with open("../compile/tempC.c", "r") as file:
         lines = file.readlines()
         for line in lines:
             c_code.append(line.strip())
 
     test_code = [];
-    with open("tempTest.c", "r") as file:
+    with open("../compile/tempTest.c", "r") as file:
         lines = file.readlines()
         for line in lines:
             test_code.append(line.strip())
