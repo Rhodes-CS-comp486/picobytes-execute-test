@@ -13,8 +13,8 @@ directory = Path("to_execute")
 directory.mkdir(parents=True, exist_ok=True)
 filepath1 = directory / "code.c"
 filepath2 = directory / "tests.c"
-filepath3 = directory / "ecode.c"
-filepath4 = directory / "etests.c"
+filepath3 = directory / "dcode.c"
+filepath4 = directory / "dtests.c"
 
 class Item(BaseModel):
     code : str
