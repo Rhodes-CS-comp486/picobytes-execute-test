@@ -1,12 +1,12 @@
 import json
-from imghdr import tests
+# from imghdr import tests
 from pathlib import Path
 from fastapi.testclient import TestClient
 from server_api import app
 
 client = TestClient(app)
-filepath1 = Path(__file__).parent / "testcode.json"
-filepath2 = Path(__file__).parent / "encodedtest.json"
+filepath1 = "./testcode.json"
+filepath2 = "./encodedtest.json"
 
 try:
     with open(filepath1, "r", encoding="utf-8") as f:
@@ -16,6 +16,13 @@ except (FileNotFoundError, json.JSONDecodeError) as e:
     raise RuntimeError(f"Error reading test file: {e}")
 ccode = data.get("code", "")
 tests = data.get("tests")
+
+json_payload = {"code": ccode, "tests": tests}
+
+response = client.post("/submit", json=json_payload)
+print(response.json())
+
+
 
 try:
     with open(filepath2, "r", encoding="utf-8") as f:
@@ -28,8 +35,10 @@ etests = data.get("tests")
 
 def test_api_submit_with_test():
     json_payload = {"code": ccode, "tests": tests}
+
     response = client.post("/submit", json=json_payload)
-    assert response.status_code == 200
+    print(response.json())
+    assert response.status_code ==200 
 
 
 def test_api_submit_no_test():

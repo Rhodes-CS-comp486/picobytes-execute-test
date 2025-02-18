@@ -11,8 +11,8 @@ import base64
 
 directory = Path("to_execute")
 directory.mkdir(parents=True, exist_ok=True)
-filepath1 = directory / "code.c"
-filepath2 = directory / "tests.c"
+filepath1 = "../compile/tempC.c"
+filepath2 = "../compile/tempTest.c"
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
@@ -31,17 +31,20 @@ def root():
 #double quotes (") inside the string are escaped as \"
 @app.post("/submit")
 def better_submit(item : Item):
-    with filepath1.open( "w", encoding="utf-8") as f:
+    print(item)
+    with open(filepath1, "w", encoding="utf-8") as f:
         f.write(item.code)
     if item.tests is not None:
-        with filepath2.open( "w", encoding="utf-8") as f:
+        with open(filepath2, "w", encoding="utf-8") as f:
             f.write(item.tests)
     else:
-        with filepath2.open( "w", encoding="utf-8") as f:
+        with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
+    subprocess.run(["python", "../compile/work.py"])
 @app.post("/encoded")
 def decode_and_write(item: Item):
     dcode = b64decode(item.code).decode("utf-8")
+    print(dcode)
     with filepath3.open( "w", encoding="utf-8") as f:
         f.write(dcode)
     if item.tests is not None:
