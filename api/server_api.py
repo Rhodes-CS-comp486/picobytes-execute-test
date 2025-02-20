@@ -9,10 +9,12 @@ from pathlib import Path
 import uvicorn
 import base64
 
-directory = Path("to_execute")
+directory = Path("../")
 directory.mkdir(parents=True, exist_ok=True)
-filepath1 = "../compile/tempC.c"
-filepath2 = "../compile/tempTest.c"
+#filepath1 = "../compile/tempC.c"
+#filepath2 = "../compile/tempTest.c"
+filepath1 = directory / "compile" /"tempC.c"
+filepath2 = directory / "compile" / "tempTest.c"
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
