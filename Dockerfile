@@ -13,8 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
+
 # Define environment variable
 ENV NAME World
 
+WORKDIR /api
 # Run hello.py when the container launches
 CMD ["python", "server_api.py"]
