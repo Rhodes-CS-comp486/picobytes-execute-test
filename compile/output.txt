@@ -1,0 +1,3 @@
+Error: Execution failed
+code.out: final_c.c:35: main: Assertion `1 + 1 == 3' failed.
+./run.sh: line 4: 447816 Aborted                 (core dumped) ./code.out
