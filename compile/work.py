@@ -16,6 +16,7 @@ def work():
     compilation_time = -1
     run_time = -1
 
+    # build the code
     subprocess.run(["pwd"])
     build_status = build()
     if (build_status != 0):
@@ -23,8 +24,9 @@ def work():
         exit(1)
 
 
+    # compile the code
     compilation_time_status = time.time()
-    compile = subprocess.run(["./compile.sh"], shell=True, capture_output=True, text=True)
+    compile = subprocess.run(["./compile.sh"], shell=True, capture_output=True, text=True, timeout=5)
     compilation_time_endn = time.time()
     compilation_time = compilation_time_endn - compilation_time_status
     print("Compilation time: " + str(compilation_time))
@@ -41,30 +43,34 @@ def work():
             f.write(compile.stderr)
         print("Compile failed!")
 
+
+    # run the code if compile was successful
     if compile.returncode == 0:
         print(compile)
         print("Compiled successfully!")
 
         run_time_start = time.time()
-        run = subprocess.run(["./run.sh"], shell=True, capture_output=True, text=True)
-        run_time_end = time.time()
-        run_time = run_time_end - run_time_start
-        print("Run time: " + str(run_time))
+        try:
+            run = subprocess.run(["./run.sh"], shell=True, capture_output=True, text=True, timeout=5)
+            run_time_end = time.time()
+            run_time = run_time_end - run_time_start
+            print("Run time: " + str(run_time))
 
-        if run.returncode == 0:
-            run_successful = True
-            with open("output.txt", "w") as f:
-                f.write(run.stdout)
-        else:
-            with open("output.txt", "w") as f:
-                f.write(run.stdout)
-                f.write(run.stderr)
-            print("Run failed!")
+            if run.returncode == 0:
+                run_successful = True
+                with open("output.txt", "w") as f:
+                    f.write(run.stdout)
+            else:
+                with open("output.txt", "w") as f:
+                    f.write(run.stdout)
+                    f.write(run.stderr)
+                print("Run failed!")
 
-        output += run.stdout
-        output += run.stderr
-
-        print("Run successfull!")
+            output += run.stdout
+            output += run.stderr
+            print("Run successfull!")
+        except subprocess.TimeoutExpired:
+            output += "Timeout! Code took too long to run."
 
     return {
         "compile": compile_successful,

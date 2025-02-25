@@ -32,7 +32,7 @@ printf("Congratulations! You guessed the number in %d attempts.\n", attempts);
 return 0;
 }
     int main(){
-    assert(1 + 1 == 3);
+    assert(1 + 1 == 2);
 
     return 0;
     }
