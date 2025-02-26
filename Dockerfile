@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12
+FROM python:3.12-slim
 
 # Set the working directory in the container
 WORKDIR /app
@@ -17,6 +17,7 @@ EXPOSE 80
 # Define environment variable
 ENV NAME World
 
-WORKDIR /api
+WORKDIR ./api
 # Run hello.py when the container launches
+
 CMD ["python", "server_api.py"]
