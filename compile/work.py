@@ -5,8 +5,14 @@ import subprocess, os
 import time
 
 def work():
+    called_directory = os.getcwd()
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(current_directory)
+
+
     os.chmod("./compile.sh", 0o755)
     os.chmod("./run.sh", 0o755)
+
 
 
     output = ""
@@ -80,6 +86,7 @@ def work():
         except subprocess.TimeoutExpired:
             return_dict["output"] = "Timeout"
 
+    os.chdir(called_directory)
     return return_dict
 
 
