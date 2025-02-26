@@ -7,6 +7,7 @@
 int main2() {
 int randomNumber, guess, attempts = 0;
 
+while (1){}
 // Seed random number generator
 srand(time(0));
 randomNumber = rand() % 100 + 1; // Random number between 1 and 100
@@ -32,13 +33,6 @@ printf("Congratulations! You guessed the number in %d attempts.\n", attempts);
 return 0;
 }
     int main(){
-    #include <assert.h>
-void test() {
-assert(1 + 1 == 2);
-}
-int main() {
-test();
-return 0;
-}
+    assert(main2() == 0)
     return 0;
     }

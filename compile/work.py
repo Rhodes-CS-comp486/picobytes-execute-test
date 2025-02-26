@@ -4,14 +4,14 @@ from build_c import *
 import subprocess, os
 import time
 
-def work():
-    called_directory = os.getcwd()
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(current_directory)
+def work(time_limit=5, runTests=True):
+    origin = os.path.dirname(os.path.realpath(__file__))
 
+    compile_file = os.path.join(origin, "compile.sh")
+    run_file = os.path.join(origin, "run.sh")
 
-    os.chmod("./compile.sh", 0o755)
-    os.chmod("./run.sh", 0o755)
+    os.chmod(compile_file, 0o755)
+    os.chmod(run_file, 0o755)
 
 
 
@@ -34,11 +34,11 @@ def work():
         return_dict["build"] = False
         return return_dict
 
-    build_successful = True
+    return_dict["build"] = True
 
     # compile the code
     compilation_time_status = time.time()
-    compile = subprocess.run(["./compile.sh"], shell=True, capture_output=True, text=True, timeout=5)
+    compile = subprocess.run([compile_file], cwd=origin, shell=True, capture_output=True, text=True, timeout=time_limit)
     compilation_time_endn = time.time()
     compilation_time = compilation_time_endn - compilation_time_status
     return_dict["compilation_time"] = compilation_time
@@ -59,12 +59,16 @@ def work():
 
     # run the code if compile was successful
     if compile.returncode == 0:
-        print(compile)
         print("Compiled successfully!")
+
+        # check if runTests is True and if not return
+        if not runTests:
+            return_dict["run"] = True
+            return return_dict
 
         run_time_start = time.time()
         try:
-            run = subprocess.run(["./run.sh"], shell=True, capture_output=True, text=True, timeout=5)
+            run = subprocess.run([run_file], cwd=origin, shell=True, capture_output=True, text=True, timeout=time_limit)
             run_time_end = time.time()
             run_time = run_time_end - run_time_start
             return_dict["run_time"] = run_time
@@ -86,7 +90,6 @@ def work():
         except subprocess.TimeoutExpired:
             return_dict["output"] = "Timeout"
 
-    os.chdir(called_directory)
     return return_dict
 
 

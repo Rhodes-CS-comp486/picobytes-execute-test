@@ -1,1 +1,1 @@
-assert(main2() == 0);
+assert(main2() == 0)

@@ -1,1 +1,1 @@
-Compilation and execution succeeded
+Execution successful.

@@ -1,13 +1,17 @@
+import os
 def build():
     try:
+        origin = os.path.dirname(os.path.realpath(__file__))
+        tempCFile = os.path.join(origin, "tempC.c")
+        tempTestFile = os.path.join(origin, "tempTest.c")
         c_code = [];
-        with open("tempC.c", "r") as file:
+        with open(tempCFile, "r") as file:
             lines = file.readlines()
             for line in lines:
                 c_code.append(line.strip())
 
         test_code = [];
-        with open("tempTest.c", "r") as file:
+        with open(tempTestFile, "r") as file:
             lines = file.readlines()
             for line in lines:
                 test_code.append(line.strip())
