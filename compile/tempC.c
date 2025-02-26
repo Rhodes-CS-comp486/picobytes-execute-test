@@ -5,7 +5,6 @@
 int main2() {
     int randomNumber, guess, attempts = 0;
 
-    while (1){}
     // Seed random number generator
     srand(time(0));
     randomNumber = rand() % 100 + 1; // Random number between 1 and 100
