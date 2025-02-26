@@ -3,6 +3,7 @@
 from build_c import *
 import subprocess, os
 import time
+import json
 
 def work(time_limit=5, runTests=True):
     origin = os.path.dirname(os.path.realpath(__file__))
@@ -23,7 +24,8 @@ def work(time_limit=5, runTests=True):
         "output": output,
         "build": False,
         "compilation_time": -1,
-        "run_time": -1
+        "run_time": -1,
+        "failed_tests": []
     }
 
     # build the code
@@ -75,10 +77,23 @@ def work(time_limit=5, runTests=True):
             print("Run time: " + str(run_time))
 
             if run.returncode == 0:
+                print("Run successful!")
                 return_dict["run"] = True
                 with open("output.txt", "w") as f:
                     f.write(run.stdout)
             else:
+                # check which tests failed
+                failed_Tests = []
+                test_no = 0
+                for line in run.stdout.split('\n'):
+                    print(line)
+                    if "ASSERT" in line:
+                        test_no += 1
+                        if "FAILED" in line:
+                            failed_Tests.append(test_no)
+                return_dict["failed_tests"] = failed_Tests
+
+
                 with open("output.txt", "w") as f:
                     f.write(run.stdout)
                     f.write(run.stderr)
@@ -86,7 +101,6 @@ def work(time_limit=5, runTests=True):
 
             return_dict["output"] += run.stdout
             return_dict["output"] += run.stderr
-            print("Run successfull!")
         except subprocess.TimeoutExpired:
             return_dict["output"] = "Timeout"
 
@@ -95,6 +109,7 @@ def work(time_limit=5, runTests=True):
 
 if __name__=="__main__":
     print("Building...")
-    print(work())
+    result = work()
+    print(json.dumps(result, indent=2))
 
 

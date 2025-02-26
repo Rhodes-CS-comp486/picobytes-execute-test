@@ -16,12 +16,15 @@ def build():
             for line in lines:
                 test_code.append(line.strip())
 
-        final_c_code = f"""#include <assert.h>
+        final_c_code = f"""
     #include <stdio.h>
+    int run_success = 0;
+    #define assert(condition) if (condition) {{printf("ASSERT PASSED!\\n");}} else {{printf("ASSERT FAILED: %s\\n", #condition);run_success = 1;}}
+
     {"\n".join(c_code)}
     int main(){{
     {"\n".join(test_code)}
-    return 0;
+    return run_success;
     }}"""
 
         with open("final_c.c", "w") as file:

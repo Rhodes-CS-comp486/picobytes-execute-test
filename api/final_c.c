@@ -1,5 +1,8 @@
-#include <assert.h>
+
     #include <stdio.h>
+    int run_success = 0;
+    #define assert(condition) if (condition) {printf("ASSERT PASSED!\n");} else {printf("ASSERT FAILED: %s\n", #condition);run_success = 1;}
+
     #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -32,13 +35,6 @@ printf("Congratulations! You guessed the number in %d attempts.\n", attempts);
 return 0;
 }
     int main(){
-    #include <assert.h>
-void test() {
-assert(1 + 1 == 2);
-}
-int main() {
-test();
-return 0;
-}
-    return 0;
+    assert(1 + 1 == 2)
+    return run_success;
     }

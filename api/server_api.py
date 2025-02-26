@@ -1,5 +1,4 @@
 from base64 import b64decode
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 import subprocess
@@ -52,6 +51,7 @@ def better_submit(item : Item):
         with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
     subprocess.run(["python", "../compile/work.py"])
+
 @app.post("/encoded")
 def decode_and_write(item: Item):
     dcode = b64decode(item.code).decode("utf-8")
