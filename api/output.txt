@@ -1,0 +1,5 @@
+Compilation failed
+final_c.c: In function ‘main’:
+final_c.c:37:5: error: expected ‘;’ before ‘return’
+   37 |     return 0;
+      |     ^~~~~~

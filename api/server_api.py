@@ -8,15 +8,24 @@ import json
 from pathlib import Path
 import uvicorn
 import base64
+import os
 
 directory = Path("../")
 directory.mkdir(parents=True, exist_ok=True)
 #filepath1 = "../compile/tempC.c"
 #filepath2 = "../compile/tempTest.c"
-filepath1 = directory / "compile" /"tempC.c"
-filepath2 = directory / "compile" / "tempTest.c"
+# filepath1 = directory / "compile" /"tempC.c"
+# filepath2 = directory / "compile" / "tempTest.c"
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
+
+parent = Path(__file__).parent.parent
+compile_location = parent / "compile"
+tempC_location = compile_location / "tempC.c"
+tempTest_location = compile_location / "tempTest.c"
+
+filepath1 = tempC_location
+filepath2 = tempTest_location
 
 class Item(BaseModel):
     code : str
