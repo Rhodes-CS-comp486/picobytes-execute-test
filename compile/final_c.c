@@ -1,12 +1,19 @@
 #include <assert.h>
-#include <stdio.h>
-#include <stdio.h>
+    #include <stdio.h>
+    #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-int is_even(int n) {
-return n % 2 == 0
+int main2() {
+int randomNumber, guess, attempts = 0;
+
+while (1){
+
 }
-int main(){
-assert(is_even(2) == 1);  // Passes
-assert(is_even(3) == 1);
 return 0;
 }
+    int main(){
+    assert(main2() == 0);
+
+    return 0;
+    }
