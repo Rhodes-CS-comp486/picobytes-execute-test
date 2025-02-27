@@ -8,7 +8,11 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update && apt-get install -y gcc
+RUN pip install uv
+RUN uv venv
+RUN uv pip install --no-cache-dir -r requirements.txt
+
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
@@ -19,4 +23,4 @@ RUN sed -ie "s/\r//g" ./compile/*.sh
 WORKDIR ./api
 # Run hello.py when the container launches
 
-CMD ["python", "server_api.py"]
+CMD ["uv","run", "server_api.py"]
