@@ -14,8 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
 
 
-# Define environment variable
-ENV NAME World
+RUN sed -ie "s/\r//g" ./compile/*.sh
 
 WORKDIR ./api
 # Run hello.py when the container launches
