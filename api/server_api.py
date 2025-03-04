@@ -9,6 +9,7 @@ import uvicorn
 import base64
 import os
 
+
 directory = Path("../")
 directory.mkdir(parents=True, exist_ok=True)
 #filepath1 = "../compile/tempC.c"
@@ -50,7 +51,7 @@ def better_submit(item : Item):
     else:
         with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
-    subprocess.run(["python", "../compile/work.py"])
+    subprocess.run(["uv","run", "../compile/work.py"])
 
 @app.post("/encoded")
 def decode_and_write(item: Item):

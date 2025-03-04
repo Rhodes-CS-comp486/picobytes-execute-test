@@ -16,7 +16,7 @@ def build():
             lines = file.readlines()
             for line in lines:
                 test_code.append(line.strip())
-
+        print(test_code)
         final_c_code = f"""
     #include <stdio.h>
     int run_success = 0;

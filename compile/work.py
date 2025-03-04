@@ -10,7 +10,8 @@ def work(time_limit=5, runTests=True):
 
     compile_file = os.path.join(origin, "compile.sh")
     run_file = os.path.join(origin, "run.sh")
-
+    print(compile_file)
+    print(run_file)
     os.chmod(compile_file, 0o755)
     os.chmod(run_file, 0o755)
 
