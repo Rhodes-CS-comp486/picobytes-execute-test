@@ -17,11 +17,6 @@ randomNumber = rand() % 100 + 1; // Random number between 1 and 100
 printf("Welcome to the Number Guessing Game!\n");
 printf("Try to guess the number between 1 and 100.\n");
 
-int n = 1000;
-while (n--) {
-printf("Guess: ");
-}
-
 // Game loop
 do {
 printf("Enter your guess: ");
@@ -40,9 +35,6 @@ printf("Congratulations! You guessed the number in %d attempts.\n", attempts);
 return 0;
 }
     int main(){
-    assert(1 + 1 == 2);
-assert(1 + 1 == 3);
-assert(1 + 1 == 4);
-assert(1);
+    assert(1 + 1 == 2)
     return run_success;
     }

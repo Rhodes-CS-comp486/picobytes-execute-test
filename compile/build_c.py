@@ -4,6 +4,7 @@ def build():
         origin = os.path.dirname(os.path.realpath(__file__))
         tempCFile = os.path.join(origin, "tempC.c")
         tempTestFile = os.path.join(origin, "tempTest.c")
+        finalCFile = os.path.join(origin, "final_c.c")
         c_code = [];
         with open(tempCFile, "r") as file:
             lines = file.readlines()
@@ -27,7 +28,7 @@ def build():
     return run_success;
     }}"""
 
-        with open("final_c.c", "w") as file:
+        with open(finalCFile, "w") as file:
             file.write(final_c_code)
         return 0
     except Exception as e:
