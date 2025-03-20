@@ -1,6 +1,6 @@
 import json
 
-filepath1 = "./testcode.json"
+filepath1 = "./testcode1.json"
 filepath2 = "./encodedtest.json"
 
 try:
