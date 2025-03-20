@@ -1,0 +1,4 @@
+{
+    "code": "#include <stdio.h>\n\nint main() {\n    while (1) {\n        printf(\"Running...\\n\");\n    }\n    return 0;\n}",
+    "tests": "assert(1 + 1 == 2)"
+}

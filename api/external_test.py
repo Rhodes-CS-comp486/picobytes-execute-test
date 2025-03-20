@@ -1,6 +1,6 @@
 import json
 
-filepath1 = "./testcode.json"
+filepath1 = "./infinite.json"
 filepath2 = "./encodedtest.json"
 
 try:
@@ -15,7 +15,7 @@ tests = data.get("tests")
 json_payload = {"code": ccode, "tests": tests}
 
 import requests
-response = requests.post("http://127.0.0.1:5000/submit", json=json_payload)
+response = requests.post("http://127.0.0.1:5001/submit", json=json_payload)
 
 
 print(response.json())

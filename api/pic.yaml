@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: picobytes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: picobytes
+  template:
+    metadata:
+      labels:
+        app: picobytes
+    spec:
+      containers:
+        - name: picobytes
+          image: dewitt483/picobytes:latest
+          ports:
+            - containerPort: 80
