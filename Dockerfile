@@ -32,8 +32,11 @@ RUN sed -ie "s/\r//g" ./compile/*.sh
 RUN uv venv
 RUN uv pip install --no-cache-dir -r requirements.txt
 
-# ad permissions
-RUN chown -R badbot:badbot /usr/app && chmod -R o-rwx /usr && chmod -R o+rx /usr/app
+# add permissions
+RUN chown -R badbot:badbot /usr/app \
+    && chmod -R o-w /usr \
+    && chmod -R o+rx /usr \
+    && chmod -R o+rx /usr/app
 
 # switch to the new user
 USER badbot

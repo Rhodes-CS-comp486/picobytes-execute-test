@@ -8,6 +8,9 @@ from pathlib import Path
 import uvicorn
 import base64
 import os
+import logging
+
+
 
 
 directory = Path("../")
@@ -27,6 +30,10 @@ tempTest_location = compile_location / "tempTest.c"
 filepath1 = tempC_location
 filepath2 = tempTest_location
 
+logLocation = parent / "logs"
+
+logging.basicConfig(filename=str( logLocation ) , filemode="a", level=logging.DEBUG, format='%(asctime)s %(message)s')
+
 class Item(BaseModel):
     code : str
     tests : str | None = None
@@ -42,7 +49,6 @@ def root():
 #double quotes (") inside the string are escaped as \"
 @app.post("/submit")
 def better_submit(item : Item):
-    print(item)
     with open(filepath1, "w", encoding="utf-8") as f:
         f.write(item.code)
     if item.tests is not None:
@@ -56,7 +62,6 @@ def better_submit(item : Item):
 @app.post("/encoded")
 def decode_and_write(item: Item):
     dcode = b64decode(item.code).decode("utf-8")
-    print(dcode)
     with filepath3.open( "w", encoding="utf-8") as f:
         f.write(dcode)
     if item.tests is not None:

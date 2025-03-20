@@ -26,6 +26,5 @@ int main2() {
             printf("Congratulations! You guessed the number in %d attempts.\n", attempts);
         }
     } while (guess != randomNumber);
-
     return 0;
 }

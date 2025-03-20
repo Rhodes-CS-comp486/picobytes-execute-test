@@ -101,7 +101,7 @@ def work(time_limit=5, runTests=True):
                 failed_Tests = []
                 test_no = 0
                 for line in run.stdout.split('\n'):
-                    print(line)
+                    # print(line)
                     if "ASSERT" in line:
                         test_no += 1
                         if "FAILED" in line:

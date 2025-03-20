@@ -24,7 +24,6 @@ def build():
             for line in lines:
                 test_code.append(line.strip())
         logger.info("Read test code")
-        print(test_code)
         final_c_code = f"""
     #include <stdio.h>
     int run_success = 0;

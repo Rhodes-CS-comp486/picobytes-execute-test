@@ -1,5 +1,4 @@
 #!/bin/bash
-cat final_c.c
 # Compiles the C code into a binary
 gcc -o ./code.out final_c.c
 
