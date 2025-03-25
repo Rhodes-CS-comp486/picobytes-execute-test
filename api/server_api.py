@@ -9,9 +9,15 @@ import uvicorn
 import base64
 import os
 import logging
+import sys
 
+parent = Path(__file__).parent.parent
+compile_location = parent / "compile"
+tempC_location = compile_location / "tempC.c"
+tempTest_location = compile_location / "tempTest.c"
+sys.path.append(str(compile_location))
 
-
+from work import work
 
 directory = Path("../")
 directory.mkdir(parents=True, exist_ok=True)
@@ -22,10 +28,7 @@ directory.mkdir(parents=True, exist_ok=True)
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
-parent = Path(__file__).parent.parent
-compile_location = parent / "compile"
-tempC_location = compile_location / "tempC.c"
-tempTest_location = compile_location / "tempTest.c"
+
 
 filepath1 = tempC_location
 filepath2 = tempTest_location
@@ -57,7 +60,8 @@ def better_submit(item : Item):
     else:
         with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
-    subprocess.run(["uv","run", "../compile/work.py"])
+    response = work()
+    return response
 
 @app.post("/encoded")
 def decode_and_write(item: Item):
