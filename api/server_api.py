@@ -10,12 +10,33 @@ import base64
 import os
 import logging
 import sys
+import threading
+
+class TimeoutError(Exception):
+    pass
+
+def run_with_timeout(timeout, function, *args, **kwargs):
+    def handler():
+        raise TimeoutError("Timed out!")
+
+    timer  = threading.Timer(timeout, handler)
+    timer.start()
+    try:
+        result = function(*args, **kwargs)
+    except TimeoutError:
+        result = {"error": "Total time exceeded!!"}
+    finally:
+        timer.cancel()
+    return result
+
 
 parent = Path(__file__).parent.parent
 compile_location = parent / "compile"
 tempC_location = compile_location / "tempC.c"
 tempTest_location = compile_location / "tempTest.c"
 sys.path.append(str(compile_location))
+
+TOTAL_TIMEOUT = 10 # seconds
 
 from work import work
 
@@ -60,7 +81,8 @@ def better_submit(item : Item):
     else:
         with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
-    response = work()
+
+    response = run_with_timeout(TOTAL_TIMEOUT, work);
     return response
 
 @app.post("/encoded")

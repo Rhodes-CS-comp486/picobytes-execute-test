@@ -15,7 +15,7 @@ tests = data.get("tests")
 json_payload = {"code": ccode, "tests": tests}
 
 import requests
-response = requests.post("http://10.20.42.23:5000/submit", json=json_payload)
+response = requests.post("http://127.0.0.1:5000/submit", json=json_payload)
 
 
 print(response.json())

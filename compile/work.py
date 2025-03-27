@@ -10,6 +10,15 @@ logging.basicConfig(filename="work.log", filemode="a", level=logging.DEBUG, form
 
 logger = logging.getLogger(__name__)
 
+def valgrind_parse(valgrind_output):
+    find_data = valgrind_output.find("HEAP SUMMARY:")
+    if find_data == -1:
+        return valgrind_output
+    else:
+        data = valgrind_output[find_data:]
+        return data
+    
+
 def work(time_limit=5, runTests=True):
     logger.info("Starting work...")
 
@@ -33,6 +42,7 @@ def work(time_limit=5, runTests=True):
         "build": False,
         "compilation_time": -1,
         "run_time": -1,
+        "valgrind": "",
         "failed_tests": []
     }
 
@@ -75,6 +85,20 @@ def work(time_limit=5, runTests=True):
     if compile.returncode == 0:
         print("Compiled successfully!")
         logger.info("Compiled successfully!")
+
+        try:
+            # run valgrind analysis
+            valgrind = subprocess.run(["valgrind", "--tool=memcheck", "--leak-check=yes", "--track-origins=yes", "./code.out"], cwd=origin, capture_output=True, text=True, timeout=time_limit)
+            if valgrind.returncode == 0:
+                print("Valgrind successful!")
+                logger.info("Valgrind successful!")
+            else:
+                print("Valgrind failed!")
+            relevant_valgrind_output = valgrind_parse(valgrind.stderr)
+            return_dict["valgrind"] = relevant_valgrind_output
+        except subprocess.TimeoutExpired:
+            logger.error("Timed out!")
+            return_dict["valgrind"] = "Timeout"
 
         # check if runTests is True and if not return
         if not runTests:
