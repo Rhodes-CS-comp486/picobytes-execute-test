@@ -16,19 +16,19 @@ class TimeoutError(Exception):
     pass
 
 def run_with_timeout(timeout, function, *args, **kwargs):
-    def handler():
-        raise TimeoutError("Timed out!")
+    result = {"response": None}
+    def run():
+        try:
+            result["response"] = function(*args, **kwargs)
+        except Exception as e:
+            result["response"] = {"error": str(e)}
+    thread = threading.Thread(target=run)
+    thread.start()
+    thread.join(timeout)
 
-    timer  = threading.Timer(timeout, handler)
-    timer.start()
-    try:
-        result = function(*args, **kwargs)
-    except TimeoutError:
-        result = {"error": "Total time exceeded!!"}
-    finally:
-        timer.cancel()
-    return result
-
+    if thread.is_alive():
+        result["response"] = {"error": "Total Timeout exceeded!!!"}
+    return result["response"]
 
 parent = Path(__file__).parent.parent
 compile_location = parent / "compile"
