@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pikubeytes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pikubeytes
+  template:
+    metadata:
+      labels:
+        app: pikubeytes
+    spec:
+      volumes:
+        - name: log-volume
+          emptyDir: {}  # Resets logs when pod restarts
+      containers:
+        - name: pikubeytes
+          image: picobytes  # Change to your actual image name
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs  # Matches Python script's log directory
+          ports:
+            - containerPort: 5000
+          imagePullPolicy: IfNotPresent
+
+        - name: fluent-bit
+          image: fluent/fluent-bit:latest
+          args:
+            - "-i"
+            - "tail"
+            - "-p"
+            - "path=/app/logs/*.log"
+            - "-o"
+            - "stdout"
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/logs

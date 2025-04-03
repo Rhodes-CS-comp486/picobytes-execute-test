@@ -6,7 +6,11 @@ import time
 import json
 import logging 
 
-logging.basicConfig(filename="work.log", filemode="a", level=logging.DEBUG, format='%(asctime)s %(message)s')
+log_dir = "/app/logs"
+log_file = os.path.join(log_dir, "work.log")
+
+os.makedirs(log_dir, exist_ok=True)
+logging.basicConfig(filename=log_file, filemode="a", level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 logger = logging.getLogger(__name__)
 

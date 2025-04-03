@@ -38,6 +38,12 @@ sys.path.append(str(compile_location))
 
 TOTAL_TIMEOUT = 10 # seconds
 
+
+parent = Path(__file__).parent.parent
+compile_location = parent / "compile"
+tempC_location = compile_location / "tempC.c"
+tempTest_location = compile_location / "tempTest.c"
+sys.path.append(str(compile_location))
 from work import work
 
 directory = Path("../")
@@ -49,7 +55,10 @@ directory.mkdir(parents=True, exist_ok=True)
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
-
+parent = Path(__file__).parent.parent
+compile_location = parent / "compile"
+tempC_location = compile_location / "tempC.c"
+tempTest_location = compile_location / "tempTest.c"
 
 filepath1 = tempC_location
 filepath2 = tempTest_location
@@ -88,15 +97,18 @@ def better_submit(item : Item):
 @app.post("/encoded")
 def decode_and_write(item: Item):
     dcode = b64decode(item.code).decode("utf-8")
-    with filepath3.open( "w", encoding="utf-8") as f:
+    with open(filepath1, "w", encoding="utf-8") as f:
         f.write(dcode)
     if item.tests is not None:
         dtests = b64decode(item.tests).decode("utf-8")
-        with filepath4.open( "w", encoding="utf-8") as f:
+        with open(filepath2, "w", encoding="utf-8") as f:
             f.write(dtests)
     else:
-        with filepath4.open( "w", encoding="utf-8") as f:
+        with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
+    response = work()
+    return response
+
 
 if __name__ == "__main__":
     uvicorn.run("server_api:app", host="0.0.0.0", port=5000, reload=True)
