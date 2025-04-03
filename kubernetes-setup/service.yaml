@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: picobytes-service
+spec:
+  selector:
+    app: pikubeytes
+  ports:
+    - protocol: TCP
+      port: 5000    # External port to expose
+      targetPort: 5000  # Port inside containers
+  type: LoadBalancer  # Change to NodePort if using minikube/kind

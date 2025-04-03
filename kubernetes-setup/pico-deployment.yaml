@@ -27,7 +27,13 @@ spec:
 
         - name: fluent-bit
           image: fluent/fluent-bit:latest
-          args: ["-i", "tail", "-p", "path=/app/logs/*.log", "-o", "stdout"]
+          args:
+            - "-i"
+            - "tail"
+            - "-p"
+            - "path=/app/logs/*.log"
+            - "-o"
+            - "stdout"
           volumeMounts:
             - name: log-volume
               mountPath: /app/logs

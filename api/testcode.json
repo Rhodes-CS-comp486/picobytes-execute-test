@@ -1,4 +1,4 @@
 {
-    "code": "#include <stdio.h>\n\nint main2() {\n    // Infinite loop for testing\n    while (1) {\n        // This is an infinite loop\n    }\n\n    return 0; // This will never be reached due to the infinite loop\n}",
+    "code": "#include <stdio.h>\n\n// Function to convert Degree \n// Fahrenheit to Degree Celsius \nfloat fahrenheit_to_celsius(float f) \n{ \n\treturn ((f - 32.0) * 5.0 / 9.0); \n} \n\n// Driver code \nint main2() \n{ \n\tfloat f = 40; \n\n\t// Passing parameter to function \nprintf(\"Temperature in Degree Celsius : %0.2f\", fahrenheit_to_celsius(f)); \n\treturn 0; \n}",
     "tests": "assert(main2(2)==0);"
 }
