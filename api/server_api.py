@@ -39,11 +39,6 @@ sys.path.append(str(compile_location))
 TOTAL_TIMEOUT = 10 # seconds
 
 
-parent = Path(__file__).parent.parent
-compile_location = parent / "compile"
-tempC_location = compile_location / "tempC.c"
-tempTest_location = compile_location / "tempTest.c"
-sys.path.append(str(compile_location))
 from work import work
 
 directory = Path("../")
@@ -55,10 +50,6 @@ directory.mkdir(parents=True, exist_ok=True)
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
-parent = Path(__file__).parent.parent
-compile_location = parent / "compile"
-tempC_location = compile_location / "tempC.c"
-tempTest_location = compile_location / "tempTest.c"
 
 filepath1 = tempC_location
 filepath2 = tempTest_location
