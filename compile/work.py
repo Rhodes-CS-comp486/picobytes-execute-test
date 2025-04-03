@@ -145,6 +145,7 @@ def work(time_limit=5, runTests=True):
             logger.error("Timed out!")
             return_dict["output"] = "Timeout"
 
+    print(json.dumps(return_dict, indent=2))
     return return_dict
 
 
