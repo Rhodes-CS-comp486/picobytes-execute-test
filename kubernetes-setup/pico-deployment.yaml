@@ -20,7 +20,7 @@ spec:
           image: picobytes  # Change to your actual image name
           volumeMounts:
             - name: log-volume
-              mountPath: /app/logs  # Matches Python script's log directory
+              mountPath: /app/run_logs  # Matches Python script's log directory
           ports:
             - containerPort: 5000
           imagePullPolicy: IfNotPresent
@@ -36,4 +36,4 @@ spec:
             - "stdout"
           volumeMounts:
             - name: log-volume
-              mountPath: /app/logs
+              mountPath: /app/run_logs

@@ -6,7 +6,7 @@ import time
 import json
 import logging 
 
-log_dir = "/app/logs"
+log_dir = "/app/run_logs"
 log_file = os.path.join(log_dir, "work.log")
 
 os.makedirs(log_dir, exist_ok=True)
