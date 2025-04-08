@@ -36,7 +36,7 @@ tempC_location = compile_location / "tempC.c"
 tempTest_location = compile_location / "tempTest.c"
 sys.path.append(str(compile_location))
 
-TOTAL_TIMEOUT = 10 # seconds
+TOTAL_TIMEOUT = 15 # seconds
 
 from work import work
 
@@ -61,6 +61,9 @@ logging.basicConfig(filename=str( logLocation ) , filemode="a", level=logging.DE
 class Item(BaseModel):
     code : str
     tests : str | None = None
+    timeout : int = 15
+    whitelisted: list[str] | None = None
+    blacklisted: list[str] | None = None
 
 app = FastAPI()
 
@@ -82,6 +85,7 @@ def better_submit(item : Item):
         with open(filepath2, "w", encoding="utf-8") as f:
             f.write("")
 
+    TOTAL_TIMEOUT = item.timeout
     response = run_with_timeout(TOTAL_TIMEOUT, work);
     return response
 
