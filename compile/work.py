@@ -20,6 +20,7 @@ def valgrind_parse(valgrind_output):
     
 
 def work(time_limit=5, runTests=True):
+    print(time_limit, runTests)
     logger.info("Starting work...")
 
     origin = os.path.dirname(os.path.realpath(__file__))

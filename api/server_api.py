@@ -17,6 +17,7 @@ class TimeoutError(Exception):
 
 def run_with_timeout(timeout, function, *args, **kwargs):
     result = {"response": None}
+    print("Running with timeout of {} seconds".format(timeout))
     def run():
         try:
             result["response"] = function(*args, **kwargs)
@@ -36,7 +37,6 @@ tempC_location = compile_location / "tempC.c"
 tempTest_location = compile_location / "tempTest.c"
 sys.path.append(str(compile_location))
 
-TOTAL_TIMEOUT = 15 # seconds
 
 from work import work
 
@@ -62,6 +62,7 @@ class Item(BaseModel):
     code : str
     tests : str | None = None
     timeout : int = 15
+    perTestTimeout : int = 5
     whitelisted: list[str] | None = None
     blacklisted: list[str] | None = None
 
@@ -76,6 +77,8 @@ def root():
 #double quotes (") inside the string are escaped as \"
 @app.post("/submit")
 def better_submit(item : Item):
+    print(item)
+    print(item.timeout)
     with open(filepath1, "w", encoding="utf-8") as f:
         f.write(item.code)
     if item.tests is not None:
@@ -86,7 +89,8 @@ def better_submit(item : Item):
             f.write("")
 
     TOTAL_TIMEOUT = item.timeout
-    response = run_with_timeout(TOTAL_TIMEOUT, work);
+    PER_TEST_TIMEOUT = item.perTestTimeout
+    response = run_with_timeout(TOTAL_TIMEOUT, work, PER_TEST_TIMEOUT);
     return response
 
 @app.post("/encoded")
