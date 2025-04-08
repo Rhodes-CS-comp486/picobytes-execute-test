@@ -1,0 +1,4 @@
+{
+    "code": "#include <stdio.h>\n#include <stdlib.h>\nint main2() {\n    // Infinite loop for testing\n while(1){}; int *i=malloc(20);   return 0; // This will never be reached due to the infinite loop\n}",
+    "tests": "assert(main2(2)==0);"
+}
