@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Executes the binary
-exec ./code.out
+./code.out
 if [ $? -ne 0 ]; then
     echo "Error: Execution failed"
     exit 1

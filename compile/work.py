@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from build_c import *
-import subprocess, os
+import subprocess, os, signal
 import time
 import json
 import logging 
@@ -22,6 +22,22 @@ def valgrind_parse(valgrind_output):
         data = valgrind_output[find_data:]
         return data
     
+# executes the fiven filename and returns the output, error and returncode, if the timeout is reached, it kills the process and returns the output, error and returncode
+def execute(filename, timeout=5):
+    proc = subprocess.Popen(
+        filename,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        preexec_fn=os.setsid,
+    )
+    try:
+        out, err = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        out, err = proc.communicate()
+        return out, err, proc.returncode
+    return out, err, proc.returncode
 
 def work(time_limit=5, runTests=True):
     print(time_limit, runTests)
@@ -65,7 +81,7 @@ def work(time_limit=5, runTests=True):
 
     # compile the code
     compilation_time_status = time.time()
-    compile = subprocess.run([compile_file], cwd=origin, shell=True, capture_output=True, text=True, timeout=time_limit)
+    compile = subprocess.run([compile_file], cwd=origin, shell=False, capture_output=True, text=True, timeout=time_limit)
     compilation_time_endn = time.time()
     compilation_time = compilation_time_endn - compilation_time_status
     return_dict["compilation_time"] = compilation_time
@@ -102,6 +118,7 @@ def work(time_limit=5, runTests=True):
             relevant_valgrind_output = valgrind_parse(valgrind.stderr)
             return_dict["valgrind"] = relevant_valgrind_output
         except subprocess.TimeoutExpired:
+            kill(valgrind.pid)
             logger.error("Timed out!")
             return_dict["valgrind"] = "Timeout"
 
@@ -112,7 +129,7 @@ def work(time_limit=5, runTests=True):
 
         run_time_start = time.time()
         try:
-            run = subprocess.run([run_file], cwd=origin, shell=True, capture_output=True, text=True, timeout=time_limit)
+            run = subprocess.run([run_file], cwd=origin, shell=False, capture_output=True, text=True, timeout=time_limit)
             run_time_end = time.time()
             run_time = run_time_end - run_time_start
             return_dict["run_time"] = run_time
@@ -147,6 +164,7 @@ def work(time_limit=5, runTests=True):
             return_dict["output"] += run.stdout
             return_dict["output"] += run.stderr
         except subprocess.TimeoutExpired:
+            kill(run.pid)
             logger.error("Timed out!")
             return_dict["output"] = "Timeout"
 
