@@ -38,15 +38,10 @@ tempTest_location = compile_location / "tempTest.c"
 sys.path.append(str(compile_location))
 
 
-
 from work import work
 
 directory = Path("../")
 directory.mkdir(parents=True, exist_ok=True)
-#filepath1 = "../compile/tempC.c"
-#filepath2 = "../compile/tempTest.c"
-# filepath1 = directory / "compile" /"tempC.c"
-# filepath2 = directory / "compile" / "tempTest.c"
 filepath3 = directory / "dcode.c"
 filepath4 = directory / "dtests.c"
 
@@ -54,7 +49,7 @@ filepath4 = directory / "dtests.c"
 filepath1 = tempC_location
 filepath2 = tempTest_location
 
-logLocation = parent / "logs"
+logLocation = parent / "run_logs"
 
 logging.basicConfig(filename=str( logLocation ) , filemode="a", level=logging.DEBUG, format='%(asctime)s %(message)s')
 
