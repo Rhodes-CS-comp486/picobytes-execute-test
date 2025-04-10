@@ -9,7 +9,22 @@ import logging
 from build_c import build
 
 # Configure logging: Adjust logging level as needed.
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+class SuppressUnwantedChangeMsg(logging.Filter):
+    def filter(self, record):
+        return "change detected" not in record.getMessage()
+streamHandler = logging.StreamHandler()
+streamHandler.addFilter(SuppressUnwantedChangeMsg())
+fileHandler = logging.FileHandler("work.log")
+fileHandler.addFilter(SuppressUnwantedChangeMsg())
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        streamHandler,                  # Logs to the console.
+        fileHandler                     # Logs to a file.
+    ]
+)
 
 def valgrind_parse(valgrind_output):
     """
