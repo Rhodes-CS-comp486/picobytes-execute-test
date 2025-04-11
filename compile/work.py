@@ -71,7 +71,8 @@ def set_executable(path):
 def work(jobdir, time_limit=5, run_tests=True):
     """
     Perform the build, compile, valgrind analysis, and run test steps.
-    
+
+    :param jobdir: Current job's directory.
     :param time_limit: Maximum allowed time for each subprocess.
     :param run_tests: Whether to execute tests after compiling.
     :return: Dictionary with the details/results of each step.
