@@ -68,7 +68,7 @@ def set_executable(path):
     else:
         logging.warning(f"File {path} does not exist.")
 
-def work(time_limit=5, run_tests=True):
+def work(jobdir, time_limit=5, run_tests=True):
     """
     Perform the build, compile, valgrind analysis, and run test steps.
     
@@ -77,7 +77,7 @@ def work(time_limit=5, run_tests=True):
     :return: Dictionary with the details/results of each step.
     """
     origin = os.path.dirname(os.path.realpath(__file__))
-    logging.info(f"Working directory: {origin}")
+    logging.info(f"Working directory: {jobdir}")
 
     compile_file = os.path.join(origin, "compile.sh")
     run_file = os.path.join(origin, "run.sh")
@@ -99,7 +99,7 @@ def work(time_limit=5, run_tests=True):
 
     # Build Step
     try:
-        build_status = build()
+        build_status = build(jobdir)
         if build_status != 0:
             logging.error("Build failed. Check your build script. Aborting further steps.")
             return results
@@ -111,7 +111,7 @@ def work(time_limit=5, run_tests=True):
 
     # Compile Step
     compile_cmd = [compile_file]
-    ret_code, compile_stdout, compile_stderr, comp_time = execute(compile_cmd, cwd=origin, timeout=time_limit)
+    ret_code, compile_stdout, compile_stderr, comp_time = execute(compile_cmd, cwd=jobdir, timeout=time_limit)
     results["compilation_time"] = comp_time
     results["output"] += compile_stdout + compile_stderr
 
@@ -123,11 +123,11 @@ def work(time_limit=5, run_tests=True):
         return results
 
     # Valgrind Analysis Step: Only performed if code.out exists.
-    code_out_path = os.path.join(origin, "code.out")
+    code_out_path = os.path.join(jobdir, "code.out")
     if os.path.exists(code_out_path):
         valgrind_cmd = ["valgrind", "--tool=memcheck", "--leak-check=yes", "--track-origins=yes", "./code.out"]
         try:
-            ret_valgrind, _, valgrind_stderr, _ = execute(valgrind_cmd, cwd=origin, timeout=time_limit)
+            ret_valgrind, _, valgrind_stderr, _ = execute(valgrind_cmd, cwd=jobdir, timeout=time_limit)
             if ret_valgrind == 0:
                 logging.info("Valgrind analysis completed successfully.")
             else:
@@ -146,7 +146,7 @@ def work(time_limit=5, run_tests=True):
         return results
 
     run_cmd = [run_file]
-    ret_run, run_stdout, run_stderr, run_time = execute(run_cmd, cwd=origin, timeout=time_limit)
+    ret_run, run_stdout, run_stderr, run_time = execute(run_cmd, cwd=jobdir, timeout=time_limit)
     results["run_time"] = run_time
     results["output"] += run_stdout
 
@@ -154,7 +154,7 @@ def work(time_limit=5, run_tests=True):
         results["run"] = True
         logging.info(f"Test execution succeeded in {run_time:.2f} seconds.")
         try:
-            with open(os.path.join(origin, "output.txt"), "w") as f:
+            with open(os.path.join(jobdir, "output.txt"), "w") as f:
                 f.write(run_stdout)
         except Exception as e:
             logging.exception("Error writing test output to file.")
@@ -166,15 +166,15 @@ def work(time_limit=5, run_tests=True):
                         if "ASSERT" in line and "FAILED" in line]
         results["failed_tests"] = failed_tests
         try:
-            with open(os.path.join(origin, "output.txt"), "w") as f:
+            with open(os.path.join(jobdir, "output.txt"), "w") as f:
                 f.write(run_stdout)
         except Exception as e:
             logging.exception("Error writing test output to file.")
     return results
 
-def main():
+def main(jobdir):
     logging.info("Starting the build, compile, and test process.")
-    results = work()
+    results = work(jobdir)
     print(json.dumps(results, indent=2))
 
 if __name__ == "__main__":

@@ -11,6 +11,8 @@ import os
 import logging
 import sys
 import threading
+import shutil
+import uuid
 
 class TimeoutError(Exception):
     pass
@@ -79,19 +81,31 @@ def root():
 def better_submit(item : Item):
     print(item)
     print(item.timeout)
-    with open(filepath1, "w", encoding="utf-8") as f:
-        f.write(item.code)
-    if item.tests is not None:
-        with open(filepath2, "w", encoding="utf-8") as f:
-            f.write(item.tests)
-    else:
-        with open(filepath2, "w", encoding="utf-8") as f:
-            f.write("")
 
-    TOTAL_TIMEOUT = item.timeout
-    PER_TEST_TIMEOUT = item.perTestTimeout
-    response = run_with_timeout(TOTAL_TIMEOUT, work, PER_TEST_TIMEOUT);
-    return response
+    job_str = str(uuid.uuid4())
+    jobdir = f"{compile_location}/jobs/{job_str}"
+    os.makedirs(jobdir, exist_ok=True)
+    jobpath = Path(jobdir)
+    try:
+        isopath1 = jobpath / "tempC.c"
+        isopath2 = jobpath / "tempTest.c"
+
+        with open(isopath1, "w", encoding="utf-8") as f:
+            f.write(item.code)
+        if item.tests is not None:
+            with open(isopath2, "w", encoding="utf-8") as f:
+                f.write(item.tests)
+        else:
+            with open(isopath2, "w", encoding="utf-8") as f:
+                f.write("")
+
+        TOTAL_TIMEOUT = item.timeout
+        PER_TEST_TIMEOUT = item.perTestTimeout
+        response = run_with_timeout(TOTAL_TIMEOUT, work, jobdir, PER_TEST_TIMEOUT)
+        return response
+
+    finally:
+        shutil.rmtree(jobdir)
 
 @app.post("/encoded")
 def decode_and_write(item: Item):

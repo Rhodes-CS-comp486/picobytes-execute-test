@@ -2,13 +2,13 @@ import os, logging
 
 logger = logging.getLogger(__name__)
 
-def build():
+def build(jobdir):
     logger.info("Building...")
     try:
         origin = os.path.dirname(os.path.realpath(__file__))
-        tempCFile = os.path.join(origin, "tempC.c")
-        tempTestFile = os.path.join(origin, "tempTest.c")
-        finalCFile = os.path.join(origin, "final_c.c")
+        tempCFile = os.path.join(jobdir, "tempC.c")
+        tempTestFile = os.path.join(jobdir, "tempTest.c")
+        finalCFile = os.path.join(jobdir, "final_c.c")
 
         logger.info(f"Temp C file: {tempCFile}, Temp test file: {tempTestFile}, Final C file: {finalCFile}")
         c_code = [];

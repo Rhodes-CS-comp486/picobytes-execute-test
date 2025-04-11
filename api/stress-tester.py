@@ -10,7 +10,7 @@ NUM_REQUESTS = None  # Set to an integer to limit total requests
 stop_event = threading.Event()
 
 def send_test_request():
-    filepath1 = "./encodedtest.json"
+    filepath1 = "./testcode1.json"
 
     try:
         with open(filepath1, "r", encoding="utf-8") as f:
@@ -18,9 +18,9 @@ def send_test_request():
     except (FileNotFoundError, json.JSONDecodeError) as e:
         raise RuntimeError(f"Error reading test file: {e}")
 
-    json_payload = {"code": data.get("code", ""), "tests": data.get("tests")}
+    json_payload = {"code": data.get("code", ""), "tests": data.get("tests"), "timeout": data.get("timeout"), "perTestTimeout": data.get("perTestTimeout")}
 
-    response = requests.post("http://localhost:5000/encoded", json=json_payload)
+    response = requests.post("http://localhost:5000/submit", json=json_payload)
     return response
 
 def send_request():
