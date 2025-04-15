@@ -3,6 +3,6 @@
   "tests": "assert(main2(2)==1);",
   "timeout": 15,
   "perTestTimeout": 3,
-  "whitelisted": ["malloc"]
+  "whitelisted": ["main2"]
 }
 
