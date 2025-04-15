@@ -85,7 +85,11 @@ def better_submit(item : Item):
 
     TOTAL_TIMEOUT = item.timeout
     PER_TEST_TIMEOUT = item.perTestTimeout
-    response = run_with_timeout(TOTAL_TIMEOUT, work, PER_TEST_TIMEOUT);
+    WHITELISTED = item.whitelisted 
+    BLACKLISTED = item.blacklisted
+    print(WHITELISTED)
+    print(BLACKLISTED)
+    response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED)
     return response
 
 @app.post("/encoded")
