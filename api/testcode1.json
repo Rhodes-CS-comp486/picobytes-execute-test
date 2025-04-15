@@ -2,5 +2,5 @@
     "code": "int square(int x) {\n    return x * x;\n}",
     "tests": "assert(square(2)==4);",
     "timeout": 15,
-    "perTestTimeout": 1
+    "perTestTimeout": 2
 }

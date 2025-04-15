@@ -8,3 +8,4 @@ if [ $? -ne 0 ]; then
 fi
 
 
+chmod +x ./code.out
