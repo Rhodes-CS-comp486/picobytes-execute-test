@@ -86,7 +86,7 @@ def set_executable(path):
     else:
         logging.warning(f"File {path} does not exist.")
 
-def work(jobdir, time_limit=5, run_tests=True):
+def work(jobdir=None, time_limit=5, run_tests=True):
     """
     Perform the build, compile, valgrind analysis, and run test steps.
 
@@ -191,7 +191,7 @@ def work(jobdir, time_limit=5, run_tests=True):
             logging.exception("Error writing test output to file.")
     return results
 
-def main(jobdir):
+def main(jobdir=None):
     logging.info("Starting the build, compile, and test process.")
     results = work(jobdir)
     print(json.dumps(results, indent=2))

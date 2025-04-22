@@ -2,7 +2,7 @@ import os, logging
 
 logger = logging.getLogger(__name__)
 
-def build(jobdir):
+def build(jobdir = None):
     logger.info("Building...")
     try:
         origin = os.path.dirname(os.path.realpath(__file__))
