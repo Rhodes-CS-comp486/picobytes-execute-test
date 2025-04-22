@@ -1,4 +1,5 @@
-import os, logging, re
+import os, logging, re, sys
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +60,13 @@ def build(blacklist=None, whitelist=None):
 
 
         if whitelist is not None:
+            whitelist.append("main")
             functions = extract_function_calls("\n".join(c_code))
-            if any(func not in whitelist for func in functions):
-                logger.error("Use of functions that are not in the allowed list.")
-                return 1
+            for func in functions:
+                if func not in whitelist:
+                    logger.error("Use of function that is not in the allowed list: " + func)
+                    # print to stderr
+                    return "Use of function that is not in the allowed list: " + func
 
 
         body_code = f"""
@@ -82,5 +86,5 @@ def build(blacklist=None, whitelist=None):
     except Exception as e:
         logger.error(e)
         print(e)
-        return 1
+        return e
 

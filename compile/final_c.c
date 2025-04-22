@@ -3,19 +3,24 @@
     #define assert(condition) if (condition) {printf("ASSERT PASSED!\n");} else {printf("ASSERT FAILED: %s\n", #condition);run_success = 1;}
         
         #include <stdio.h>
-#include <stdlib.h>
-int main2() {
-// Infinite loop for testing
-printf("Hello World\n");
-wile(1){}; int *i=malloc(20);   return 0; // This will never be reached due to the infinite loop
+long long factorial(int n) {
+if (n < 0) {
+// Factorial is not defined for negative numbers
+return 0;
+}
+
+unsigned long long result = 1;
+for (int i = 2; i <= n; ++i) {
+result *= i;
+}
+return result;
 }
 
         int main(){
-            assert(main2(2)==1);
-assert(main2(2)==0);
-assert(main2(2)==0);
-assert(main2(2)==0);
-assert(main2(2)==0);
+            assert(factorial(3) == 6);
+assert(factorial(4) == 120);
+assert(factorial(0) == 1);
+assert(factorial(-1) == 0);
             return run_success;
         }
             

@@ -1,8 +1,8 @@
+
 {
-  "code": "#include <stdio.h>\n#include <stdlib.h>\nint main2() {\n    // Infinite loop for testing\n while(0){}; int *i=malloc(20);   return 0; // This will never be reached due to the infinite loop\n}",
-  "tests": "assert(main2(2)==1);",
+  "code": "#include <stdio.h>\nlong long factorial(int n) {\n    if (n < 0) {\n        // Factorial is not defined for negative numbers\n        return 0;\n    }\n\n    unsigned long long result = 1;\n    for (int i = 2; i <= n; ++i) {\n        result *= i;\n    }\n    return result;\n}",
+  "tests": "assert(factorial(3) == 6);\nassert(factorial(4) == 120);\nassert(factorial(0) == 1);\nassert(factorial(-1) == 0);",
   "timeout": 15,
-  "perTestTimeout": 3,
-  "whitelisted": ["main2"]
+  "perTestTimeout": 3
 }
 

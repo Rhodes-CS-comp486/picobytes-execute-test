@@ -1,7 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h>
-int main2() {
-    // Infinite loop for testing
-printf("Hello World\n");
- wile(1){}; int *i=malloc(20);   return 0; // This will never be reached due to the infinite loop
+long long factorial(int n) {
+    if (n < 0) {
+        // Factorial is not defined for negative numbers
+        return 0;
+    }
+
+    unsigned long long result = 1;
+    for (int i = 2; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
 }

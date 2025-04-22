@@ -109,6 +109,7 @@ def work(time_limit=5, run_tests=True, blacklist=None, whitelist=None):
     :param run_tests: Whether to execute tests after compiling.
     :return: Dictionary with the details/results of each step.
     """
+    logging.info(f"Running work.py with args: time_limit={time_limit}, run_tests={run_tests}, blacklist={blacklist}, whitelist={whitelist}")
     origin = os.path.dirname(os.path.realpath(__file__))
     logging.info(f"Working directory: {origin}")
 
@@ -135,6 +136,8 @@ def work(time_limit=5, run_tests=True, blacklist=None, whitelist=None):
         build_status = build(blacklist, whitelist)
         if build_status != 0:
             logging.error("Build failed. Check your build script. Aborting further steps.")
+            results["output"] += "\n" + build_status
+            print(json.dumps(results, indent=2))
             return results
         results["build"] = True
         logging.info("Build succeeded.")

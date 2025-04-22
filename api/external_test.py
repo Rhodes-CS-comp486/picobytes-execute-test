@@ -23,7 +23,7 @@ print(json_payload)
 response = requests.post("http://127.0.0.1:5000/submit", json=json_payload)
 
 
-print(response.json())
+print(json.dumps(response.json(), indent=4))
 
 
 
