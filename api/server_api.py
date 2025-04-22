@@ -94,14 +94,14 @@ def better_submit(item : Item):
             with open(isopath2, "w", encoding="utf-8") as f:
                 f.write("")
 
-    TOTAL_TIMEOUT = item.timeout
-    PER_TEST_TIMEOUT = item.perTestTimeout
-    WHITELISTED = item.whitelisted
-    BLACKLISTED = item.blacklisted
-    print(WHITELISTED)
-    print(BLACKLISTED)
-    response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED)
-    return response
+        TOTAL_TIMEOUT = item.timeout
+        PER_TEST_TIMEOUT = item.perTestTimeout
+        WHITELISTED = item.whitelisted
+        BLACKLISTED = item.blacklisted
+        print(WHITELISTED)
+        print(BLACKLISTED)
+        response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED)
+        return response
 
     finally:
         shutil.rmtree(jobdir)
