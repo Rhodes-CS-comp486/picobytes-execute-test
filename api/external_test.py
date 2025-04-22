@@ -1,6 +1,6 @@
 import json
 
-filepath1 = "./testcode9.json"
+filepath1 = "./testcode.json"
 filepath2 = "./encodedtest.json"
 
 try:
@@ -13,14 +13,17 @@ ccode = data.get("code", "")
 tests = data.get("tests")
 timeout = data.get("timeout", 10)
 pertesttimeout = data.get("perTestTimeout", 3)
+whitelisted = data.get("whitelisted", None)
+blacklisted = data.get("blacklisted", None)
 
-json_payload = {"code": ccode, "tests": tests, "timeout": timeout, "perTestTimeout": pertesttimeout}
+json_payload = {"code": ccode, "tests": tests, "timeout": timeout, "perTestTimeout": pertesttimeout, "whitelisted": whitelisted, "blacklisted": blacklisted}
 
 import requests
-response = requests.post("http://127.0.0.1:5001/submit", json=json_payload)
+print(json_payload)
+response = requests.post("http://127.0.0.1:5000/submit", json=json_payload)
 
 
-print(response.json())
+print(json.dumps(response.json(), indent=4))
 
 
 

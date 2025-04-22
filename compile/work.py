@@ -7,9 +7,10 @@ import time
 import json
 import logging
 from build_c import build
-
+import re
 # Configure logging: Adjust logging level as needed.
 log_dir = "/app/run_logs"
+log_dir = "./"
 
 log_file = os.path.join(log_dir, "work.log")
 os.makedirs(log_dir, exist_ok=True)
@@ -28,6 +29,20 @@ logging.basicConfig(
         fileHandler                     # Logs to a file.
     ]
 )
+
+def parse_compile_output(compile_output):
+    """
+    Parse the output of the compiler.
+    :param compile_output: The output of the compiler
+    """
+    # check for pragma poison error
+    # print(compile_output)
+    matches = re.findall(r'error: attempt to use poisoned "(\w+)"', compile_output)
+    if matches:
+        matchFormat = map(lambda x: f"Not allowed to use {x}", matches)
+        return "\n".join(set(matchFormat))
+    return compile_output
+
 
 def valgrind_parse(valgrind_output):
     """
@@ -86,7 +101,7 @@ def set_executable(path):
     else:
         logging.warning(f"File {path} does not exist.")
 
-def work(jobdir=None, time_limit=5, run_tests=True):
+def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=None):
     """
     Perform the build, compile, valgrind analysis, and run test steps.
 
@@ -95,6 +110,7 @@ def work(jobdir=None, time_limit=5, run_tests=True):
     :param run_tests: Whether to execute tests after compiling.
     :return: Dictionary with the details/results of each step.
     """
+    logging.info(f"Running work.py with args: time_limit={time_limit}, run_tests={run_tests}, blacklist={blacklist}, whitelist={whitelist}")
     origin = os.path.dirname(os.path.realpath(__file__))
     logging.info(f"Working directory: {jobdir}")
 
@@ -118,9 +134,11 @@ def work(jobdir=None, time_limit=5, run_tests=True):
 
     # Build Step
     try:
-        build_status = build(jobdir)
+        build_status = build(jobdir, blacklist, whitelist)
         if build_status != 0:
             logging.error("Build failed. Check your build script. Aborting further steps.")
+            results["output"] += "\n" + build_status
+            print(json.dumps(results, indent=2))
             return results
         results["build"] = True
         logging.info("Build succeeded.")
@@ -132,13 +150,15 @@ def work(jobdir=None, time_limit=5, run_tests=True):
     compile_cmd = [compile_file]
     ret_code, compile_stdout, compile_stderr, comp_time = execute(compile_cmd, cwd=jobdir, timeout=time_limit)
     results["compilation_time"] = comp_time
-    results["output"] += compile_stdout + compile_stderr
 
     if ret_code == 0:
         results["compile"] = True
         logging.info(f"Compilation succeeded in {comp_time:.2f} seconds.")
     else:
         logging.error("Compilation failed. Aborting further steps.")
+        compiler_output = parse_compile_output(compile_stdout + compile_stderr)
+        # print(compiler_output)
+        results["output"] +="\n" + compiler_output
         return results
 
     # Valgrind Analysis Step: Only performed if code.out exists.

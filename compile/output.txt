@@ -1,0 +1,5 @@
+ASSERT PASSED!
+ASSERT FAILED: factorial(4) == 120
+ASSERT PASSED!
+ASSERT PASSED!
+Error: Execution failed
