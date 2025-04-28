@@ -25,9 +25,6 @@ WORKDIR /app
 COPY . /app
 
 
-RUN sed -ie "s/\r//g" ./compile/*.sh
-
-
 
 RUN uv venv
 RUN uv pip install --no-cache-dir -r requirements.txt
@@ -45,7 +42,7 @@ USER badbot
 
 
 
-WORKDIR /app/api
+
 
 # Run hello.py when the container launches
 

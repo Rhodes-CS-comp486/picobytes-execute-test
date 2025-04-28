@@ -17,23 +17,10 @@ spec:
           emptyDir: {}  # Resets logs when pod restarts
       containers:
         - name: pikubeytes
-          image: picobytes:concur  # Change to your actual image name
+          image: picobytes:api2  # Change to your actual image name
           volumeMounts:
             - name: log-volume
               mountPath: /app/run_logs  # Matches Python script's log directory
           ports:
             - containerPort: 5000
           imagePullPolicy: IfNotPresent
-
-        - name: fluent-bit
-          image: fluent/fluent-bit:latest
-          args:
-            - "-i"
-            - "tail"
-            - "-p"
-            - "path=/app/run_logs/*.log"
-            - "-o"
-            - "stdout"
-          volumeMounts:
-            - name: log-volume
-              mountPath: /app/run_logs

@@ -10,7 +10,6 @@ from build_c import build
 import re
 # Configure logging: Adjust logging level as needed.
 log_dir = "/app/run_logs"
-log_dir = "./"
 
 log_file = os.path.join(log_dir, "work.log")
 os.makedirs(log_dir, exist_ok=True)
