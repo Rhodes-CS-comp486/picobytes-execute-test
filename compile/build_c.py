@@ -47,8 +47,7 @@ def build(jobdir = None, blacklist=None, whitelist=None):
             for line in lines:
                 test_code.append(line.strip())
         logger.info("Read test code")
-        header_code = f"""
-    int run_success = 0;
+        header_code = f"""int run_success = 0;
     #define assert(condition) if (condition) {{printf("ASSERT PASSED!\\n");}} else {{printf("ASSERT FAILED: %s\\n", #condition);run_success = 1;}}
         """
 
@@ -78,6 +77,7 @@ def build(jobdir = None, blacklist=None, whitelist=None):
         }}
             """
         final_c_code = header_code + filter_c_code + body_code
+        final_c_code = final_c_code.strip()
 
         with open(finalCFile, "w") as file:
             file.write(final_c_code)
