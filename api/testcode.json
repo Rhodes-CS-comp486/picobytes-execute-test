@@ -1,6 +1,6 @@
 
 {
-  "code": "#include <stdio.h>\nlong long factorial(int n) {\n    if (n < 0) {\n        // Factorial is not defined for negative numbers\n        return 0;\n    }\n\n    unsigned long long result = 1;\n    for (int i = 2; i <= n; ++i) {\n        result *= i;\n    }\n    return result;\n}",
+  "code": "#include <stdio.h>\n#include <stdlib.h>\nlong long factorial(int n) {\n    if (n < 0) {\n        // Factorial is not defined for negative numbers\n        return 0;\n    }\n\n    unsigned long long result = 1;\n    for (int i = 2; i <= n; ++i) {\n        result *= i;\n    }\n malloc(2);    return result;\n}",
   "tests": "assert(factorial(3) == 6);\nassert(factorial(4) == 120);\nassert(factorial(0) == 1);\nassert(factorial(-1) == 0);",
   "timeout": 15,
   "perTestTimeout": 3

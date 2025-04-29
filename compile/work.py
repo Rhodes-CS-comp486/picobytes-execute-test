@@ -43,16 +43,63 @@ def parse_compile_output(compile_output):
         return "\n".join(set(matchFormat))
     return compile_output
 
-
 def valgrind_parse(valgrind_output):
     """
-    Extract the HEAP SUMMARY from a valgrind output.
+    Extract and clean the HEAP SUMMARY section from valgrind output.
+    Removes PID prefixes, file paths, and memory addresses.
     
-    :param valgrind_output: The full stderr output from valgrind.
-    :return: A substring beginning from "HEAP SUMMARY:" or the original output if not found.
+    :param valgrind_output: Full stderr output from valgrind.
+    :return: Cleaned HEAP SUMMARY string or message if not found.
     """
+    import re
+
     idx = valgrind_output.find("HEAP SUMMARY:")
-    return valgrind_output[idx:] if idx != -1 else valgrind_output
+    if idx == -1:
+        return "HEAP SUMMARY not found."
+
+    relevant = valgrind_output[idx:]
+    lines = relevant.splitlines()
+    cleaned = []
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("=="):
+            parts = line.split("==", 2)
+            if len(parts) == 3:
+                content = parts[2].strip()
+            else:
+                content = line
+        else:
+            content = line
+
+        # Remove memory addresses like 0x4841866
+        content = re.sub(r'0x[0-9a-fA-F]+', '(address hidden)', content)
+
+        # Remove absolute paths
+        content = re.sub(r'in (/[^ ]+)', 'in (path hidden)', content)
+
+        cleaned.append(content)
+
+    return "\n".join(cleaned)
+def parse_output(output_text, offset=0):
+    """
+    Parse the output of the compiler.
+    :param output_text: The output of the compiler
+    """
+    results = []
+    pattern = re.compile(r'final_c\.c:(\d+):\d+:\s+(error|warning):\s+(.*)')
+
+    for line in output_text.splitlines():
+        match = pattern.search(line)
+        if match:
+            line_number = int(match.group(1)) - offset
+            error_message = match.group(3).strip()
+            results.append((line_number, error_message))
+    
+    logging.info(f"Found {len(results)} errors.")
+    return results
 
 def execute(command, cwd=None, timeout=5):
     """
@@ -116,10 +163,13 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
 
     compile_file = os.path.join(origin, "compile.sh")
     run_file = os.path.join(origin, "run.sh")
+
+    logging.info(f"Working directory: {jobdir}")
     
     # Ensure the compile and run scripts exist and are executable.
     set_executable(compile_file)
     set_executable(run_file)
+    offset = 4 if blacklist else 3
 
     results = {
         "build": False,
@@ -129,6 +179,7 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
         "compilation_time": -1,
         "run_time": -1,
         "valgrind": "",
+        "formatted_response": [],
         "failed_tests": []
     }
 
@@ -137,7 +188,7 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
         build_status = build(jobdir, blacklist, whitelist)
         if build_status != 0:
             logging.error("Build failed. Check your build script. Aborting further steps.")
-            results["output"] += "\n" + build_status
+            results["output"] += "\n" + str(build_status)
             print(json.dumps(results, indent=2))
             return results
         results["build"] = True
@@ -157,7 +208,7 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
     else:
         logging.error("Compilation failed. Aborting further steps.")
         compiler_output = parse_compile_output(compile_stdout + compile_stderr)
-        # print(compiler_output)
+        results["formatted_response"] = parse_output(compiler_output, offset=offset)
         results["output"] +="\n" + compiler_output
         return results
 

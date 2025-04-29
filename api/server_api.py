@@ -100,7 +100,7 @@ def better_submit(item : Item):
         BLACKLISTED = item.blacklisted
         print(WHITELISTED)
         print(BLACKLISTED)
-        response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED)
+        response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED, jobdir=jobdir)
         return response
 
     finally:
