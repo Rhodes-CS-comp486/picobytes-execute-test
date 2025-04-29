@@ -13,7 +13,8 @@
 
 # pull public docker image ---- best for picobytes core ---- the latest working version of a docker image will be made public
 1. go to this link: https://hub.docker.com/r/dewitt483/picobytes/tags
-2. copy the pull command from the desired image and run it on command line
+2. Link to the latest docker image [unstable]: https://hub.docker.com/r/na0maly/picobytes-execute-test
+3. copy the pull command from the desired image and run it on command line
 
 # run docker container 
 1. execute command: docker run -p localport:5000 image_name 
