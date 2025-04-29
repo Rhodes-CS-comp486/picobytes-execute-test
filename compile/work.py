@@ -83,7 +83,8 @@ def valgrind_parse(valgrind_output):
         cleaned.append(content)
 
     return "\n".join(cleaned)
-def parse_output(output_text, offset=0):
+
+def parse_results(output_text, offset=0):
     """
     Parse the output of the compiler.
     :param output_text: The output of the compiler
@@ -100,6 +101,25 @@ def parse_output(output_text, offset=0):
     
     logging.info(f"Found {len(results)} errors.")
     return results
+
+def parse_final_output(output_text, offset=0):
+    """
+    Parse the output of the compiler.
+    :param output_text: The output of the compiler
+    """
+    lines = output_text.split('\n')
+    parsed_lines = []
+    line_pattern = re.compile(r'final_c\.c:(\d+):')
+
+    for line in lines:
+        match = line_pattern.search(line)
+        if match:
+            original_line_number = int(match.group(1))
+            adjusted_line_number = original_line_number - offset
+            line = line_pattern.sub(f'line: {adjusted_line_number}:', line)
+        parsed_lines.append(line.replace('final_c.c', 'code.c'))
+
+    return '\n'.join(parsed_lines)
 
 def execute(command, cwd=None, timeout=5):
     """
@@ -190,11 +210,13 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
             logging.error("Build failed. Check your build script. Aborting further steps.")
             results["output"] += "\n" + str(build_status)
             print(json.dumps(results, indent=2))
+            results["output"] = parse_final_output(results["output"])
             return results
         results["build"] = True
         logging.info("Build succeeded.")
     except Exception as e:
         logging.exception(f"Exception during build: {e}")
+        results["output"] += parse_final_output(results["output"])
         return results
 
     # Compile Step
@@ -208,8 +230,9 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
     else:
         logging.error("Compilation failed. Aborting further steps.")
         compiler_output = parse_compile_output(compile_stdout + compile_stderr)
-        results["formatted_response"] = parse_output(compiler_output, offset=offset)
+        results["formatted_response"] = parse_results(compiler_output, offset=offset)
         results["output"] +="\n" + compiler_output
+        results["output"] = parse_final_output(results["output"])
         return results
 
     # Valgrind Analysis Step: Only performed if code.out exists.
@@ -233,6 +256,7 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
     # Test Execution Step (if enabled)
     if not run_tests:
         results["run"] = True
+        results["output"] = parse_final_output(results["output"])
         return results
 
     run_cmd = [run_file]
@@ -260,6 +284,7 @@ def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=
                 f.write(run_stdout)
         except Exception as e:
             logging.exception("Error writing test output to file.")
+    results["output"] = parse_final_output(results["output"])
     return results
 
 def main(jobdir=None):
