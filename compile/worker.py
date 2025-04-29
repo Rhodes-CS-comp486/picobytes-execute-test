@@ -7,9 +7,11 @@ import redis.asyncio as aioredis
 import threading
 from pathlib import Path
 import shutil
+import concurrent.futures
+import functools
+import sys
+from concurrent.futures.process import BrokenProcessPool
 
-class TimeoutError(Exception):
-    pass
 
 def run_with_timeout(timeout, function, *args, **kwargs):
     result = {"response": None}
@@ -27,18 +29,19 @@ def run_with_timeout(timeout, function, *args, **kwargs):
         result["response"] = {"error": "Total Timeout exceeded!!!"}
     return result["response"]
 
-async def process_job(r, job):
+async def process_job(r, job, executor):
 
-    job_data = json.loads(job[1])  # job is a tuple, with [0] being the queue and [1] the data
+    job_data = job
     job_id = job_data["id"]
     code = job_data["code"]
     tests = job_data["tests"]
-    timeout = job_data["timeout"]
+    total_timeout = job_data["timeout"]
     per_test_timeout = job_data["per_test_timeout"]
     whitelisted = job_data["whitelisted"]
     blacklisted = job_data["blacklisted"]
     jobdir = f"/jobs/{job_id}"
     jobpath = Path(jobdir)
+    jobpath.parent.mkdir(parents=True, exist_ok=True)
     os.makedirs(jobdir, exist_ok=True)
     try:
 
@@ -53,28 +56,79 @@ async def process_job(r, job):
         else:
                 with open(isopath2, "w", encoding="utf-8") as f:
                     f.write("")
-        response = run_with_timeout(timeout, work, jobdir=jobdir, time_limit=per_test_timeout,
-                                        blacklist=blacklisted,
-                                        whitelist=whitelisted)
-        await r.rpush(f"result:{job_id}", json.dumps(response))
+        loop = asyncio.get_event_loop()
+        work_task = functools.partial(work,
+    jobdir=jobdir,
+    time_limit=per_test_timeout,
+    blacklist=blacklisted,
+    whitelist=whitelisted)
+        try:
+            response = await asyncio.wait_for(
+                loop.run_in_executor(
+                    executor,
+                    work_task
+                ),
+                timeout=total_timeout
+            )
+        except (
+                BrokenProcessPool, RuntimeError):
+            logging.error(f"[{job_id}] Fatal: Executor pool became unusable. Exiting worker.",
+                          exc_info=True)
+            sys.exit(1)
+        except asyncio.TimeoutError:
+            logging.warning(f"Job {job_id} timed out after {total_timeout} seconds")
+            response = {"error": f"Total Timeout exceeded ({total_timeout}s)!!!"}
+
+        if response is not None:
+            await r.rpush(f"result:{job_id}", json.dumps(response))
+        else:
+            # Fallback error if response somehow wasn't set (shouldn't happen with current logic)
+            await r.rpush(f"result:{job_id}", json.dumps({"error": "Unknown processing issue"}))
+    except Exception as e:
+        # This block catches exceptions *before* or *after* the executor call
+        # (e.g., failure during file writing, directory creation/removal)
+        logging.error(f"Job {job_id} setup/cleanup error: {e}", exc_info=True)
+        # Attempt to push an error result for this job ID if possible
+        error_response = {"error": f"Setup/Cleanup error: {e}"}
+        try:
+            await r.rpush(f"result:{job_id}", json.dumps(error_response))
+        except Exception as redis_e:
+            logging.error(f"Failed to push error result for job {job_id}: {redis_e}", exc_info=True)
     finally:
-        shutil.rmtree(jobdir)
+        if jobpath.exists():
+            shutil.rmtree(jobdir)
 
 
 
 
 
 async def worker():
+    logging.basicConfig(filename = "/run_logs/worker.log", level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
     r = aioredis.Redis(host='redis', port=6379, decode_responses=True)
-    while True:
-        try:
-            job = await r.blpop("job_queue")
-            await process_job(r, job)
-        except asyncio.CancelledError:
-            break
-        except Exception as e:
-            logging.error(f"Unexpected error: {e}")
-        await asyncio.sleep(0.1)
+    logging.info("Worker connecting to Redis...")
+    executor = concurrent.futures.ProcessPoolExecutor()
+    logging.info("Executor created")
+    try:
+        while True:
+            try:
+                job = await r.blpop("job_queue")
+                job_data_str = job[1]
+                job_data = json.loads(job_data_str)
+                job_id = job_data["id"]
+                await process_job(r, job_data, executor)
+            except (
+            BrokenProcessPool, RuntimeError):
+                logging.error(f"[{job_id}] Fatal: Executor pool became unusable. Exiting worker.",
+                              exc_info=True)
+                sys.exit(1)
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logging.error(f"Unexpected error: {e}")
+    finally:
+        executor.shutdown(wait=True)
+        await r.close()
 
 if __name__ == "__main__":
     asyncio.run(worker())

@@ -32,7 +32,7 @@ def send_request():
         except Exception as e:
             print(f"[{threading.current_thread().name}] Request failed: {e}")
         count += 1
-        time.sleep(0.01)  # Small delay to simulate real traffic
+        time.sleep(0.02)  # Small delay to simulate real traffic
 
 # Start multiple threads to simulate load
 threads = []

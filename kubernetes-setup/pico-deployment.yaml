@@ -17,7 +17,7 @@ spec:
           emptyDir: {}  # Resets logs when pod restarts
       containers:
         - name: pikubeytes
-          image: picobytes:api2  # Change to your actual image name
+          image: picobytes:api  # Change to your actual image name
           volumeMounts:
             - name: log-volume
               mountPath: /app/run_logs  # Matches Python script's log directory
