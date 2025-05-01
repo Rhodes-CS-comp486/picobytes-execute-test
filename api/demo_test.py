@@ -2,7 +2,7 @@ import requests
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
-# Set the target URL (your service's URL)
+
 
 TOTAL_REQUESTS = 300  # Total number of requests to send
 CONCURRENT_REQUESTS = 50  # Number of concurrent threads to simulate
@@ -12,6 +12,7 @@ requests_sent = 0
 requests_received = 0
 successful_requests = 0
 failed_requests = 0
+num_ran = 0
 
 filepath1 = "./testcode1.json"
 try:
@@ -23,7 +24,7 @@ json_payload = {"code": data.get("code", ""), "tests": data.get("tests"), "timeo
 
 # Function to send a request
 def send_request():
-    global requests_sent, requests_received, successful_requests, failed_requests
+    global requests_sent, requests_received, successful_requests, failed_requests, num_ran
     requests_sent += 1
 
     try:
@@ -35,6 +36,13 @@ def send_request():
             successful_requests += 1
         else:
             failed_requests += 1
+        job_data = response.json()
+        if "error" in job_data:
+            num_ran = num_ran
+        else:
+            did_run = job_data.get("run")
+            if did_run is True:
+                num_ran += 1
 
         print(f"Response Code: {response.status_code}, Time Taken: {response.elapsed.total_seconds()}s,Response: {response.json()}")
     except Exception as e:
@@ -67,6 +75,7 @@ def stress_test():
     print(f"Failed Requests: {failed_requests}")
     print(f"Test Duration: {total_time:.2f} seconds")
     print(f"Requests per Second: {requests_sent / total_time:.2f}")
+    print(f"Successful runs: {num_ran} out of {TOTAL_REQUESTS}")
 
 
 if __name__ == "__main__":
