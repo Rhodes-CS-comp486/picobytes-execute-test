@@ -8,6 +8,7 @@ import json
 import logging
 from build_c import build
 import re
+import resource
 # Configure logging: Adjust logging level as needed.
 log_dir = "/app/run_logs"
 
@@ -53,7 +54,7 @@ def valgrind_parse(valgrind_output):
     idx = valgrind_output.find("HEAP SUMMARY:")
     return valgrind_output[idx:] if idx != -1 else valgrind_output
 
-def execute(command, cwd=None, timeout=5):
+def execute(command, cwd=None, timeout=1):
     """
     Execute a command with a timeout, returning its output details.
     
@@ -100,7 +101,7 @@ def set_executable(path):
     else:
         logging.warning(f"File {path} does not exist.")
 
-def work(jobdir = None, time_limit=5, run_tests=True, blacklist=None, whitelist=None):
+def work(jobdir = None, time_limit=1, run_tests=True, blacklist=None, whitelist=None):
     """
     Perform the build, compile, valgrind analysis, and run test steps.
 

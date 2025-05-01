@@ -4,10 +4,14 @@ import json
 import requests
 
 NUM_THREADS = 10
-NUM_REQUESTS = None  # Set to an integer to limit total requests
+NUM_REQUESTS = 100  # Set to an integer to limit total requests
 
 # Event to signal threads to stop
 stop_event = threading.Event()
+
+
+
+
 
 def send_test_request():
     filepath1 = "./testcode1.json"
@@ -25,14 +29,14 @@ def send_test_request():
 
 def send_request():
     count = 0
-    while not stop_event.is_set() and (NUM_REQUESTS is None or count < NUM_REQUESTS):
+    while not stop_event.is_set() or (count < NUM_REQUESTS):
         try:
             response = send_test_request()
             print(f"[{threading.current_thread().name}] Status: {response.status_code}, Response: {response.json()}")
         except Exception as e:
             print(f"[{threading.current_thread().name}] Request failed: {e}")
         count += 1
-        time.sleep(0.02)  # Small delay to simulate real traffic
+        time.sleep(0.01)  # Small delay to simulate real traffic
 
 # Start multiple threads to simulate load
 threads = []

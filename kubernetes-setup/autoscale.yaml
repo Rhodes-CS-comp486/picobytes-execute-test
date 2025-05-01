@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: worker-deployment
   minReplicas: 2 # Minimum number of Pods
-  maxReplicas: 10 # Maximum number of Pods
+  maxReplicas: 5 # Maximum number of Pods
   metrics:
   - type: Resource
     resource:

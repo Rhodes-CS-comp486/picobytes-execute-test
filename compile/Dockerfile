@@ -23,8 +23,13 @@ WORKDIR /app
 
 # Copy the current directory contents into the container at /app
 COPY . /app
-
-
+RUN mkdir /run_logs
+RUN mkdir /jobs
+RUN chown -R badbot:badbot /app \
+    && chmod -R o-w /app \
+    && chmod -R o+rx /app \
+    && chmod -R o+rx /app
+USER badbot
 RUN sed -ie "s/\r//g" ./*.sh
 
 
@@ -33,7 +38,7 @@ RUN uv venv
 RUN uv pip install --no-cache-dir -r requirements.txt
 
 # add permissions
-RUN mkdir /run_logs
+
 
 
 

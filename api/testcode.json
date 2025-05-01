@@ -2,7 +2,7 @@
 {
   "code": "#include <stdio.h>\n\nint main2() {\n    while (1) {  // Infinite loop\n        printf(\"This is an infinite loop!\\n\");\n    }\n\n    return 0;  // This will never be reached\n}",
   "tests": "assert(main2(1)==1);",
-  "timeout": 5,
-  "perTestTimeout": 3
+  "timeout": 1,
+  "perTestTimeout": 1
 }
 
