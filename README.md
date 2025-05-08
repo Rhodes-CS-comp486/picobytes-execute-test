@@ -27,6 +27,16 @@ A scalable execution and testing backend for source code, running in Docker or K
 14. [Troubleshooting](#troubleshooting)
 15. [Security Considerations](#security-considerations)
 
+## Technologies used
+
+- [Docker](https://www.docker.com/)
+- [Kubernetes](https://kubernetes.io/)
+- [Redis](https://redis.io/)
+- [FASTAPI](https://github.com/tiangolo/fastapi)
+- [Valgrind](https://valgrind.org/)
+- [Python](https://www.python.org/)
+- [Bash](https://www.gnu.org/software/bash/)
+
 ## Features
 - Isolated environment for running user submitted code
 - Compiling, executing and testing user submitted code
