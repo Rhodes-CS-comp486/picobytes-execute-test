@@ -50,13 +50,13 @@ A scalable execution and testing backend for source code, running in Docker or K
 1. download docker ------> https://docs.docker.com/get-started/
 
 ## Build docker image locally ---- for execute and test devs ---- public docker image steps below
-1. at top level of repository, run 'construct.py' in order to build the images and start the kubernetes node described in the 'kubernetes-setup' folder
-2. if this doesn't work try running the commands 'docker build -t picobytes:api ./api' and 'docker build -t picobytes:compile ./compile'
+1. at top level of repository, run `construct.py` in order to build the images and start the kubernetes node described in the 'kubernetes-setup' folder
+2. if this doesn't work try running the commands `docker build -t picobytes:api ./api` and `docker build -t picobytes:compile ./compile`
 
 ## Make public docker image
-1. modify docker build command as such: 'docker build -t docker_username/name_of_image:tag .'
-            ex. 'docker build -t dewitt483/picobytes:v3 .'
-2. push docker image: docker push docker_username/name_of_image:tag
+1. modify docker build command as such: `docker build -t docker_username/name_of_image:tag .`
+ex. `docker build -t dewitt483/picobytes:v3 .`
+2. push docker image: `docker push docker_username/name_of_image:tag`
 
 ## Pull public docker image ---- best for picobytes core ---- the latest working version of a docker image will be made public
 1. go to this link: https://hub.docker.com/r/dewitt483/picobytes/tags
@@ -64,7 +64,7 @@ A scalable execution and testing backend for source code, running in Docker or K
 3. copy the pull command from the desired image and run it on command line
 
 ## Run docker container (monolithic mode) --- this will only work if using the version with api and compiling in one container
-1. execute command: docker run -p localport:5000 image_name 
+execute command: `docker run -p localport:5000 image_name` 
 
 
 Now you can make calls into a single docker container
@@ -83,13 +83,13 @@ Now you can make calls into a single docker container
 - autoscale configures the horizontal autoscaling of worker pods, min and max can be changed here along with targeted utilization of resources
 
 
-## Start the kubernetes cluster -- if not already started by 'construct.py'
+## Start the kubernetes cluster -- if not already started by `construct.py`
 
-1. run on command line: 'kubectl apply -f ./kubernetes-setup'
-- run 'kubectl get pods' to confirm containers are running
-- run kubectl get services to confirm service is running
+1. run on command line: `kubectl apply -f ./kubernetes-setup`
+- run `kubectl get pods` to confirm containers are running
+- run `kubectl get services` to confirm service is running
 2. expose ports (if not already) by running 
-- kubectl port-forward service/name_field_in_service desiredport:5000 --address 0.0.0.0
+- `kubectl port-forward service/name_field_in_service desiredport:5000 --address 0.0.0.0`
 
 Now you should have a cluster up and running that can be called the same way a single container is called.
 
@@ -104,7 +104,7 @@ code: string
 &nbsp;&nbsp;&nbsp;&nbsp;**Required.** The source code to execute. Do not define main() in this, use a different name
 
 tests: string | null  
-&nbsp;&nbsp;&nbsp;&nbsp;Optional. Test cases to run against the code. Format of 'assert(func(x)==y)'
+&nbsp;&nbsp;&nbsp;&nbsp;Optional. Test cases to run against the code. Format of `assert(func(x)==y)`
 
 timeout: integer (default: 15)  
 &nbsp;&nbsp;&nbsp;&nbsp;Optional. Maximum total execution time in seconds.
