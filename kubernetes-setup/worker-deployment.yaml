@@ -20,7 +20,7 @@ spec:
           emptyDir: { }
       containers:
         - name: worker
-          image: worker:latest
+          image: picobytes:compile
           volumeMounts:
             - name: log-volume
               mountPath: /app/run_logs
