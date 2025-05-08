@@ -28,58 +28,58 @@ A scalable execution and testing backend for source code, running in Docker or K
 15. [Troubleshooting](#troubleshooting)
 16. [Security Considerations](#security-considerations)
 
-## features
-Isolated environment for running user submitted code
-Compiling, executing and testing user submitted code
-Valgrind analysis
-API to communicate with our service
-Customizable options in the api on how the code should run. Examples: custom time limits, custom tests, whether to run the tests or not
-Blacklisting functions: functions that are not allowed to be used in the code
-Whitelisted functions: only functions that can be used in the code
-Resource limiting: amount of memory program can use, network access, time limits
-Timing how long each step such as : compilations, execution took
-Parsing the output to return a line by line analysis on the code
-Parsing the valgrind output to be more readable by the user
-Decoupling the API and computation allowing us to scale each part independently depending on the request load and load type
-Autoscaling of resources based on the workload
-Return a list of tests that failed
-Automatic recovery in case any components fail
-Clean up after each job is completed
-Persistant logging even if worker crashes
+## Features
+- Isolated environment for running user submitted code
+- Compiling, executing and testing user submitted code
+- Valgrind analysis
+- API to communicate with our service
+- Customizable options in the api on how the code should run. Examples: custom time limits, custom tests, whether to run the tests or not
+- Blacklisting functions: functions that are not allowed to be used in the code
+- Whitelisted functions: only functions that can be used in the code
+- Resource limiting: amount of memory program can use, network access, time limits
+- Timing how long each step such as : compilations, execution took
+- Parsing the output to return a line by line analysis on the code
+- Parsing the valgrind output to be more readable by the user
+- Decoupling the API and computation allowing us to scale each part independently depending on the request load and load type
+- Autoscaling of resources based on the workload
+- Return a list of tests that failed
+- Automatic recovery in case any components fail
+- Clean up after each job is completed
+- Persistant logging even if worker crashes
 
-## setup docker --- necessecary step
+## Setup docker --- necessecary step
 1. download docker desktop ------> https://www.docker.com/products/docker-desktop/
 2. open docker desktop
 
-## build docker image locally ---- for execute and test devs ---- public docker image steps below
+## Build docker image locally ---- for execute and test devs ---- public docker image steps below
 1. at top level of repository, run 'construct.py' in order to build the images and start the kubernetes node described in the 'kubernetes-setup' folder
 2. if this doesn't work try running the commands in 'construct.py' in the terminal
 
-## make public docker image
+## Make public docker image
 1. modify docker build command as such: 'docker build -t docker_username/name_of_image:tag .'
             ex. 'docker build -t dewitt483/picobytes:v3 .'
 2. push docker image: docker push docker_username/name_of_image:tag
 
-## pull public docker image ---- best for picobytes core ---- the latest working version of a docker image will be made public
+## Pull public docker image ---- best for picobytes core ---- the latest working version of a docker image will be made public
 1. go to this link: https://hub.docker.com/r/dewitt483/picobytes/tags
 2. Link to the latest docker image [unstable]: https://hub.docker.com/r/na0maly/picobytes-execute-test
 3. copy the pull command from the desired image and run it on command line
 
-## run docker container (monolithic mode) --- this will only work if using the version with api and compiling in one container
+## Run docker container (monolithic mode) --- this will only work if using the version with api and compiling in one container
 1. execute command: docker run -p localport:5000 image_name 
 
 
 Now you can make calls into a single docker container
 
-## setup kubernetes cluster
+## Setup kubernetes cluster
 
 1. install kubernetes on your local machine, kubernetes and kubectl are required to execute cluster
 
-## setup docker compatibility. 
+## Setup docker compatibility. 
 1. go to docker desktop, then settings, then kubernetes
 2. toggle the cluster on, select kubeadm, then click apply and restart
 
-## deployment files setup
+## Deployment files setup
 1. deployment files are .yaml files, they are located in the /kubernetes-setup/ folder
     a. pico-deployment.yaml sets up the API container(s), within that file, ensure all app fields are set to the same name, picobytes for example. Make sure the image field is set correctly to the picobytes:api container image
     b. in service.yaml file, make sure the internal port is set to the same as the pikubeytes app configured in pico-deployment.yaml. The external port can be changed to whatever is available on your system
@@ -89,7 +89,7 @@ Now you can make calls into a single docker container
     f. autoscale configures the horizontal autoscaling of worker pods, min and max can be changed here along with targeted utilization of resources
 
 
-## start the kubernetes cluster -- if not already started by 'construct.py'
+## Start the kubernetes cluster -- if not already started by 'construct.py'
 
 1. run on command line: 'kubectl apply -f ./kubernetes-setup'
     a. run 'kubectl get pods' to confirm containers are running
@@ -100,7 +100,7 @@ Now you can make calls into a single docker container
 Now you should have a cluster up and running that can be called the same way a single container is called.
 
 
-## sending requests into cluster or container
+## Sending requests into cluster or container
 
 1. if configured properly JSON requests can be sent into host_ip:5000/submit
 
