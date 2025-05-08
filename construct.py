@@ -3,7 +3,7 @@ import subprocess
 
 def build_images():
     subprocess.run(["docker","build","-t","picobytes:api", "./api"])
-    subprocess.run(["docker", "build", "-t", "worker", "./compile"])
+    subprocess.run(["docker", "build", "-t", "picobytes:compile", "./compile"])
 
 def apply_yaml():
     subprocess.run(["kubectl", "delete", "-f", "./kubernetes-setup"])
