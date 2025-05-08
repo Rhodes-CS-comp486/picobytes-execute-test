@@ -22,11 +22,19 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push
+      - name: Build and Push API
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
-          context: .
+          context: ./api
           push: true
-          tags: na0maly/picobytes-execute-test:latest
+          tags: na0maly/picobytes-execute-test:api
+
+      - name: Build and Push Worker
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: ./compile
+          push: true
+          tags: na0maly/picobytes-execute-test:compile 
 
