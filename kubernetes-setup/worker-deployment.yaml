@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+  labels:
+    app: worker
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: worker
+  template:
+
+    metadata:
+      labels:
+        app: worker
+    spec:
+      volumes:
+        - name: log-volume
+          emptyDir: { }
+      containers:
+        - name: worker
+          image: worker:latest
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/run_logs
+          imagePullPolicy: IfNotPresent
+          resources: # Add this section
+            requests:
+              cpu: 100m   # Request 100 millicores of CPU
+              memory: 256Mi # Request 256 Megabytes of memory
+
+        - name: fluent-bit
+          image: fluent/fluent-bit:latest
+          args:
+            - "-i"
+            - "tail"
+            - "-p"
+            - "path=/app/run_logs/*.log"
+            - "-o"
+            - "stdout"
+          volumeMounts:
+            - name: log-volume
+              mountPath: /app/run_logs
+          resources: # Add this section
+            requests:
+              cpu: 50m   # Request 100 millicores of CPU
+              memory: 100Mi

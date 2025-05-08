@@ -1,59 +1,14 @@
-from base64 import b64decode
 from fastapi import FastAPI
 from pydantic import BaseModel
-import subprocess
-import tempfile
 import json
-from pathlib import Path
 import uvicorn
-import base64
-import os
-import logging
-import sys
-import threading
-import shutil
 import uuid
+import asyncio
+import redis.asyncio as aioredis
 
 class TimeoutError(Exception):
     pass
 
-def run_with_timeout(timeout, function, *args, **kwargs):
-    result = {"response": None}
-    print("Running with timeout of {} seconds".format(timeout))
-    def run():
-        try:
-            result["response"] = function(*args, **kwargs)
-        except Exception as e:
-            result["response"] = {"error": str(e)}
-    thread = threading.Thread(target=run)
-    thread.start()
-    thread.join(timeout)
-
-    if thread.is_alive():
-        result["response"] = {"error": "Total Timeout exceeded!!!"}
-    return result["response"]
-
-parent = Path(__file__).parent.parent
-compile_location = parent / "compile"
-tempC_location = compile_location / "tempC.c"
-tempTest_location = compile_location / "tempTest.c"
-sys.path.append(str(compile_location))
-
-
-from work import work
-
-directory = Path("../")
-directory.mkdir(parents=True, exist_ok=True)
-filepath3 = directory / "dcode.c"
-filepath4 = directory / "dtests.c"
-
-
-filepath1 = tempC_location
-filepath2 = tempTest_location
-
-logLocation = parent / "run_logs"
-
-logging.basicConfig(filename=str( logLocation ) , filemode="a", level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 class Item(BaseModel):
     code : str
@@ -64,6 +19,7 @@ class Item(BaseModel):
     blacklisted: list[str] | None = None
 
 app = FastAPI()
+r = aioredis.Redis(host="redis", port=6379, decode_responses=True)
 
 @app.get("/")
 def root():
@@ -73,53 +29,46 @@ def root():
 #newlines (\n) are escaped as \\n
 #double quotes (") inside the string are escaped as \"
 @app.post("/submit")
-def better_submit(item : Item):
+async def better_submit(item : Item):
     print(item)
     print(item.timeout)
 
-    job_str = str(uuid.uuid4())
-    jobdir = f"{compile_location}/jobs/{job_str}"
-    os.makedirs(jobdir, exist_ok=True)
-    jobpath = Path(jobdir)
-    try:
-        isopath1 = jobpath / "tempC.c"
-        isopath2 = jobpath / "tempTest.c"
+    job_id = str(uuid.uuid4())
+    jobdir = f"/jobs/{job_id}"
 
-        with open(isopath1, "w", encoding="utf-8") as f:
-            f.write(item.code)
-        if item.tests is not None:
-            with open(isopath2, "w", encoding="utf-8") as f:
-                f.write(item.tests)
-        else:
-            with open(isopath2, "w", encoding="utf-8") as f:
-                f.write("")
+    job_data = {
+        "id": job_id,
+        "code": item.code,
+        "tests": item.tests,
+        "timeout": item.timeout,
+        "per_test_timeout": item.perTestTimeout,
+        "whitelisted": item.whitelisted,
+        "blacklisted": item.blacklisted
+    }
 
-        TOTAL_TIMEOUT = item.timeout
-        PER_TEST_TIMEOUT = item.perTestTimeout
-        WHITELISTED = item.whitelisted
-        BLACKLISTED = item.blacklisted
-        print(WHITELISTED)
-        print(BLACKLISTED)
-        response = run_with_timeout(TOTAL_TIMEOUT, work, time_limit=PER_TEST_TIMEOUT, blacklist=BLACKLISTED, whitelist=WHITELISTED, jobdir=jobdir)
-        return response
+    await r.rpush("job_queue", json.dumps(job_data))
 
-    finally:
-        shutil.rmtree(jobdir)
+    timeout_seconds = 30
+    poll_interval = 0.2  # 200ms between checks
+    elapsed = 0
+
+    while elapsed < timeout_seconds:
+        result_name, result_json = await r.blpop(f"result:{job_id}")
+        print(result_json)
+        if result_json:
+            await r.delete(f"result:{job_id}")  # Optional cleanup
+            return json.loads(result_json)
+
+        await asyncio.sleep(poll_interval)
+        elapsed += poll_interval
+
+    return "Timeout Error"
+
+
 
 @app.post("/encoded")
 def decode_and_write(item: Item):
-    dcode = b64decode(item.code).decode("utf-8")
-    with open(filepath1, "w", encoding="utf-8") as f:
-        f.write(dcode)
-    if item.tests is not None:
-        dtests = b64decode(item.tests).decode("utf-8")
-        with open(filepath2, "w", encoding="utf-8") as f:
-            f.write(dtests)
-    else:
-        with open(filepath2, "w", encoding="utf-8") as f:
-            f.write("")
-    response = work()
-    return response
+    return "Not implemented"
 
 
 if __name__ == "__main__":
