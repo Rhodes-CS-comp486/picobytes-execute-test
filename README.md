@@ -104,7 +104,7 @@ Now you should have a cluster up and running that can be called the same way a s
 
 1. if configured properly JSON requests can be sent into host_ip:5000/submit
 
-##Input Schema
+Input Schema
 -------------
 code: string  
 &nbsp;&nbsp;&nbsp;&nbsp;**Required.** The source code to execute.
@@ -125,7 +125,7 @@ blacklisted: list of strings | null
 &nbsp;&nbsp;&nbsp;&nbsp;Optional. List of functions or imports explicitly forbidden.
 
 
-##Output Schema
+Output Schema
 -------------
 build: boolean  
 &nbsp;&nbsp;&nbsp;&nbsp;True if the code built successfully (e.g., compilation step passed).
