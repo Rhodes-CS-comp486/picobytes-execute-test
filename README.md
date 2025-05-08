@@ -15,18 +15,17 @@ A scalable execution and testing backend for source code, running in Docker or K
 
 ### Kubernetes Setup
 8. [Install Kubernetes](#setup-kubernetes-cluster)
-9. [Enable Docker Kubernetes Compatibility](#setup-docker-compatibility)
-10. [Configure Deployment Files](#deployment-files-setup)
-11. [Start the Kubernetes Cluster](#start-the-kubernetes-cluster----if-not-already-started-by-constructpy)
+9. [Configure Deployment Files](#deployment-files-setup)
+10. [Start the Kubernetes Cluster](#start-the-kubernetes-cluster----if-not-already-started-by-constructpy)
 
 ### API Usage
-12. [Sending Requests](#sending-requests-into-cluster-or-container)
-13. [Input Schema](#input-schema)
-14. [Output Schema](#output-schema)
+11. [Sending Requests](#sending-requests-into-cluster-or-container)
+12. [Input Schema](#input-schema)
+13. [Output Schema](#output-schema)
 
 ### Operational Support
-15. [Troubleshooting](#troubleshooting)
-16. [Security Considerations](#security-considerations)
+14. [Troubleshooting](#troubleshooting)
+15. [Security Considerations](#security-considerations)
 
 ## Features
 - Isolated environment for running user submitted code
@@ -48,12 +47,11 @@ A scalable execution and testing backend for source code, running in Docker or K
 - Persistant logging even if worker crashes
 
 ## Setup docker --- necessecary step
-1. download docker desktop ------> https://www.docker.com/products/docker-desktop/
-2. open docker desktop
+1. download docker ------> https://docs.docker.com/get-started/
 
 ## Build docker image locally ---- for execute and test devs ---- public docker image steps below
 1. at top level of repository, run 'construct.py' in order to build the images and start the kubernetes node described in the 'kubernetes-setup' folder
-2. if this doesn't work try running the commands in 'construct.py' in the terminal
+2. if this doesn't work try running the commands 'docker build -t picobytes:api ./api' and 'docker build -t picobytes:compile ./compile'
 
 ## Make public docker image
 1. modify docker build command as such: 'docker build -t docker_username/name_of_image:tag .'
@@ -73,29 +71,25 @@ Now you can make calls into a single docker container
 
 ## Setup kubernetes cluster
 
-1. install kubernetes on your local machine, kubernetes and kubectl are required to execute cluster
-
-## Setup docker compatibility. 
-1. go to docker desktop, then settings, then kubernetes
-2. toggle the cluster on, select kubeadm, then click apply and restart
+1. install kubernetes on your local machine, kubernetes and kubectl are required to execute cluster ------> https://kubernetes.io/
 
 ## Deployment files setup
-1. deployment files are .yaml files, they are located in the /kubernetes-setup/ folder
-    a. pico-deployment.yaml sets up the API container(s), within that file, ensure all app fields are set to the same name, picobytes for example. Make sure the image field is set correctly to the picobytes:api container image
-    b. in service.yaml file, make sure the internal port is set to the same as the pikubeytes app configured in pico-deployment.yaml. The external port can be changed to whatever is available on your system
-    c. redis-deployment and redis-service can have their ports changed but the server_api.py and worker.py need to be updated to reflect the new port or else they will not connect.
-    d. worker-deployment configures the compile containers, limits can be set here for both the compiling container itself and its sidecar logging container
-    e. components configures the metrics server that allows for autoscaling. Generally don't change this.
-    f. autoscale configures the horizontal autoscaling of worker pods, min and max can be changed here along with targeted utilization of resources
+- deployment files are .yaml files, they are located in the /kubernetes-setup/ folder
+- pico-deployment.yaml sets up the API container(s), within that file, ensure all app fields are set to the same name, picobytes for example. Make sure the image field is set correctly to the picobytes:api container image
+- in service.yaml file, make sure the internal port is set to the same as the pikubeytes app configured in pico-deployment.yaml. The external port can be changed to whatever is available on your system
+- redis-deployment and redis-service can have their ports changed but the server_api.py and worker.py need to be updated to reflect the new port or else they will not connect.
+- worker-deployment configures the compile containers, limits can be set here for both the compiling container itself and its sidecar logging container
+- components configures the metrics server that allows for autoscaling. Generally don't change this.
+- autoscale configures the horizontal autoscaling of worker pods, min and max can be changed here along with targeted utilization of resources
 
 
 ## Start the kubernetes cluster -- if not already started by 'construct.py'
 
 1. run on command line: 'kubectl apply -f ./kubernetes-setup'
-    a. run 'kubectl get pods' to confirm containers are running
-    b. run kubectl get services to confirm service is running
+- run 'kubectl get pods' to confirm containers are running
+- run kubectl get services to confirm service is running
 2. expose ports (if not already) by running 
-    kubectl port-forward service/name_field_in_service desiredport:5000 --address 0.0.0.0
+- kubectl port-forward service/name_field_in_service desiredport:5000 --address 0.0.0.0
 
 Now you should have a cluster up and running that can be called the same way a single container is called.
 
@@ -107,10 +101,10 @@ Now you should have a cluster up and running that can be called the same way a s
 Input Schema
 -------------
 code: string  
-&nbsp;&nbsp;&nbsp;&nbsp;**Required.** The source code to execute.
+&nbsp;&nbsp;&nbsp;&nbsp;**Required.** The source code to execute. Do not define main() in this, use a different name
 
 tests: string | null  
-&nbsp;&nbsp;&nbsp;&nbsp;Optional. Test cases to run against the code.
+&nbsp;&nbsp;&nbsp;&nbsp;Optional. Test cases to run against the code. Format of 'assert(func(x)==y)'
 
 timeout: integer (default: 15)  
 &nbsp;&nbsp;&nbsp;&nbsp;Optional. Maximum total execution time in seconds.
@@ -119,7 +113,7 @@ perTestTimeout: integer (default: 5)
 &nbsp;&nbsp;&nbsp;&nbsp;Optional. Time limit per test case in seconds.
 
 whitelisted: list of strings | null  
-&nbsp;&nbsp;&nbsp;&nbsp;Optional. List of functions or imports explicitly allowed.
+&nbsp;&nbsp;&nbsp;&nbsp;Optional. List of functions or imports explicitly allowed. Must allow function names defined in code.
 
 blacklisted: list of strings | null  
 &nbsp;&nbsp;&nbsp;&nbsp;Optional. List of functions or imports explicitly forbidden.
@@ -146,13 +140,13 @@ run_time: float
 &nbsp;&nbsp;&nbsp;&nbsp;Time in seconds taken to execute the compiled code.
 
 valgrind: string  
-&nbsp;&nbsp;&nbsp;&nbsp;Raw Valgrind output (e.g., memory usage, leaks, and errors).
+&nbsp;&nbsp;&nbsp;&nbsp;Parsed Valgrind output giving information on memory leaks
 
 formatted_response: list  
 &nbsp;&nbsp;&nbsp;&nbsp;List of errors that occured inside submitted code with the line number inside the code. May be empty.
 
 failed_tests: list  
-&nbsp;&nbsp;&nbsp;&nbsp;List of test case identifiers or names that failed, if any.
+&nbsp;&nbsp;&nbsp;&nbsp;List of numbers that correspond to tests that failed, if any.
 
 ## Troubleshooting
 
@@ -164,7 +158,6 @@ failed_tests: list
 
 - Currently these containers are NOT hardened beyond switching off root user. PLEASE take appropriate measures to ensure they are properly secured with read-only root and disabled network capabilities
 - Code is run in isolated containers with timeouts and optional function blacklisting.
-- Use of Valgrind provides memory safety insights but is not a full sandbox. Further isolation via seccomp/apparmor is recommended in production.
 
 
 
