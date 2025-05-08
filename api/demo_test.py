@@ -3,9 +3,11 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 
-
-TOTAL_REQUESTS = 300  # Total number of requests to send
-CONCURRENT_REQUESTS = 50  # Number of concurrent threads to simulate
+RED = '\033[31m'
+GREEN = '\033[32m'
+RESET = '\033[0m'
+TOTAL_REQUESTS = 100  # Total number of requests to send
+CONCURRENT_REQUESTS = 20  # Number of concurrent threads to simulate
 
 # Counters to track requests and responses
 requests_sent = 0
@@ -14,7 +16,7 @@ successful_requests = 0
 failed_requests = 0
 num_ran = 0
 
-filepath1 = "./testcode1.json"
+filepath1 = "./testcode9.json"
 try:
     with open(filepath1, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -39,15 +41,31 @@ def send_request():
         job_data = response.json()
         if "error" in job_data:
             num_ran = num_ran
+            print(
+               f"{RED}Response Code: {response.status_code}, Time Taken: {response.elapsed.total_seconds()}s,Response: Error {RESET}")
         else:
             did_run = job_data.get("run")
             if did_run is True:
                 num_ran += 1
-
-        print(f"Response Code: {response.status_code}, Time Taken: {response.elapsed.total_seconds()}s,Response: {response.json()}")
+                print(
+                f"{GREEN}Response Code: {response.status_code}, Time Taken: {response.elapsed.total_seconds()}s,Response: Success {RESET}")
+            else:
+                print(
+                   f"{RED}Response Code: {response.status_code}, Time Taken: {response.elapsed.total_seconds()}s,Response: Failed {RESET}")
+        # pretty_print(successful_requests, num_ran - successful_requests)
     except Exception as e:
         failed_requests += 1
         print(f"Request failed: {e}")
+
+
+import sys
+import time
+def pretty_print(success, fail):
+    sys.stdout.write("\033[F\033[K" * 6)
+    print(f"Sent: {requests_sent} / Received: {requests_received}")
+    print(f"{GREEN}Success: {success}")
+    print(f"{RED}Failure: {fail}")
+    print(f"Total: {success + fail}")
 
 
 # Function to perform the stress test

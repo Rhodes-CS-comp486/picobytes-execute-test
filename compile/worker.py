@@ -13,21 +13,6 @@ import sys
 from concurrent.futures.process import BrokenProcessPool
 
 NUM_WORKERS = os.cpu_count()
-def run_with_timeout(timeout, function, *args, **kwargs):
-    result = {"response": None}
-    print("Running with timeout of {} seconds".format(timeout))
-    def run():
-        try:
-            result["response"] = function(*args, **kwargs)
-        except Exception as e:
-            result["response"] = {"error": str(e)}
-    thread = threading.Thread(target=run)
-    thread.start()
-    thread.join(timeout)
-
-    if thread.is_alive():
-        result["response"] = {"error": "Total Timeout exceeded!!!"}
-    return result["response"]
 
 async def process_job(r, job, executor):
 
@@ -82,13 +67,11 @@ async def process_job(r, job, executor):
         if response is not None:
             await r.rpush(f"result:{job_id}", json.dumps(response))
         else:
-            # Fallback error if response somehow wasn't set (shouldn't happen with current logic)
+
             await r.rpush(f"result:{job_id}", json.dumps({"error": "Unknown processing issue"}))
     except Exception as e:
-        # This block catches exceptions *before* or *after* the executor call
-        # (e.g., failure during file writing, directory creation/removal)
+
         logging.error(f"Job {job_id} setup/cleanup error: {e}", exc_info=True)
-        # Attempt to push an error result for this job ID if possible
         error_response = {"error": f"Setup/Cleanup error: {e}"}
         try:
             await r.rpush(f"result:{job_id}", json.dumps(error_response))
