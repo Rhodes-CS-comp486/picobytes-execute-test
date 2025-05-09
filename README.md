@@ -4,28 +4,30 @@ A scalable execution and testing backend for source code, running in Docker or K
 ## Table of Contents
 
 1. [Overview](#picobytes-execute-test)
-2. [Features](#features)
+2. [Technologies](#technologies-used)
+3. [Features](#features)
 
 ### Docker Usage
-3. [Install Docker](#setup-docker---necessecary-step)
-4. [Build Docker Image Locally](#build-docker-image-locally----for-execute-and-test-devs----public-docker-image-steps-below)
-5. [Publish Docker Image](#make-public-docker-image)
-6. [Pull Public Docker Image](#pull-public-docker-image----best-for-picobytes-core----the-latest-working-version-of-a-docker-image-will-be-made-public)
-7. [Run Docker Container (Monolithic Mode)](#run-docker-container-monolithic-mode----this-will-only-work-if-using-the-version-with-api-and-compiling-in-one-container)
+4. [Install Docker](#setup-docker---necessecary-step)
+5. [Build Docker Image Locally](#build-docker-image-locally----for-execute-and-test-devs----public-docker-image-steps-below)
+6. [Publish Docker Image](#make-public-docker-image)
+7. [Pull Public Docker Image](#pull-public-docker-image----best-for-picobytes-core----the-latest-working-version-of-a-docker-image-will-be-made-public)
+8. [Run Docker Container (Monolithic Mode)](#run-docker-container-monolithic-mode----this-will-only-work-if-using-the-version-with-api-and-compiling-in-one-container)
 
 ### Kubernetes Setup
-8. [Install Kubernetes](#setup-kubernetes-cluster)
-9. [Configure Deployment Files](#deployment-files-setup)
-10. [Start the Kubernetes Cluster](#start-the-kubernetes-cluster----if-not-already-started-by-constructpy)
+9. [Install Kubernetes](#setup-kubernetes-cluster)
+10. [Configure Deployment Files](#deployment-files-setup)
+11. [Start the Kubernetes Cluster](#start-the-kubernetes-cluster----if-not-already-started-by-constructpy)
 
 ### API Usage
-11. [Sending Requests](#sending-requests-into-cluster-or-container)
-12. [Input Schema](#input-schema)
-13. [Output Schema](#output-schema)
-
+12. [Sending Requests](#sending-requests-into-cluster-or-container)
+13. [Input Schema](#input-schema)
+14. [Output Schema](#output-schema)
+### Worker Logs
+15. [Worker Logging](#worker-logs)
 ### Operational Support
-14. [Troubleshooting](#troubleshooting)
-15. [Security Considerations](#security-considerations)
+16. [Troubleshooting](#troubleshooting)
+17. [Security Considerations](#security-considerations)
 
 ## Technologies used
 
@@ -157,6 +159,9 @@ formatted_response: list
 
 failed_tests: list  
 &nbsp;&nbsp;&nbsp;&nbsp;List of numbers that correspond to tests that failed, if any.
+
+## Worker Logs
+- Worker logs of individual pods can be accessed by finding available pods through `kubectl get pods` and doing the following: `kubectl logs pod_name -c fluent-bit`
 
 ## Troubleshooting
 
